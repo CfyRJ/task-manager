@@ -11,8 +11,11 @@ package-uninstall-hc:
 	pip uninstall hexlet-code
 	rm -r dist
 
-dev:
+start_debug:
 	python manage.py runserver
+
+start:
+	gunicorn task_manager.wsgi:application
 
 lint:
 	poetry run flake8 page_analyzer
