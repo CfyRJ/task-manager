@@ -1,0 +1,56 @@
+{% load django_bootstrap5 %}
+{% load i18n %}
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Task manager</title>
+  </head>
+
+  <body class="d-flex flex-column min-vh-100"></body>
+
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    
+    {% bootstrap_messages %}
+    
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <a class="navbar-brand" href="#">{% translate "Task manger" %}</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">{% translate "Users" %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">{% translate "Log In" %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">{% translate "Sign up" %}</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <h1 class="my-4"> </h1>
+    <h1 class="my-4"></h1>
+
+    <div class="container wrapper flex-grow-1">
+
+    {% block main %}
+    {% endblock %}
+
+    </div>
+
+    <footer>
+      <div class="container my-5 pt-4 border-top">
+        <a target="_blank" href="https://ru.hexlet.io">{% translate "Hexlet" %}</a>
+      </div>
+    </footer>
+  
+  </body>
+</html>
