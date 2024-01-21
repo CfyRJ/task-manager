@@ -17,14 +17,17 @@ start_debug:
 start:
 	gunicorn task_manager.wsgi:application
 
+test:
+	python manage.py test
+
 lint:
-	poetry run flake8 page_analyzer
+	poetry run flake8 task_manager --exclude=settings.py
 
-pytest:
-	poetry run pytest
+# pytest:
+# 	poetry run pytest
 
-test-coverage:
-	poetry run pytest --cov=page_analyzer --cov-report xml
+# test-coverage:
+# 	poetry run pytest --cov=task_manager --cov-report xml
 
 build:
 	./build.sh
