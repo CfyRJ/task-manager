@@ -15,6 +15,8 @@ from django.shortcuts import redirect
 
 
 class MixinMessage(LoginRequiredMixin):
+    redirect_field_name = ""
+
     def get_login_url(self, *args, **kwargs):
         messages.add_message(self.request, messages.ERROR,
                              'You are not authorized! Please come in.')

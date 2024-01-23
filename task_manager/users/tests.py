@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
 
-class InitialTests(TestCase):
+class UserslTests(TestCase):
 
     def setUp(self):
         self.client = Client()
@@ -66,11 +66,11 @@ class InitialTests(TestCase):
                       content)
         self.assertRedirects(response_redirect, '/users/', 302, 200)
 
-        response = self.client.get('/users/3/update/')
+        response = self.client.get('/users/4/update/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
-        response_redirect = self.client.post('/users/3/update/',
+        response_redirect = self.client.post('/users/4/update/',
                                              {"username": "utest10",
                                               "password1": "ptest10",
                                               "password2": "ptest10"})
@@ -83,7 +83,7 @@ class InitialTests(TestCase):
         self.assertRedirects(response_redirect, '/users/', 302, 200)
 
         self.client.login(username="utest10", password="ptest10")
-        response = self.client.get('/users/3/update/')
+        response = self.client.get('/users/4/update/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
@@ -97,13 +97,13 @@ class InitialTests(TestCase):
                       content)
         self.assertRedirects(response_redirect, '/users/', 302, 200)
 
-        response = self.client.get('/users/3/delete/')
+        response = self.client.get('/users/4/delete/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
         content = response.content.decode()
         self.assertIn('utest1', content)
 
-        response_redirect = self.client.post('/users/3/delete/')
+        response_redirect = self.client.post('/users/4/delete/')
 
         response = self.client.get('/users/')
         content = response.content.decode()
