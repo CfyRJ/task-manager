@@ -107,9 +107,11 @@ class TasksTests(TestCase):
         self.assertEqual(status_code, 200)
 
     def test_work_tasks(self):
-        self.client.login(username="user3_tasks", password="user3_tasks")
+        self.client.login(username="user3_tasks", password="pass3_tasks")
 
         response = self.client.get('/tasks/')
+        status_code = response.status_code
+        self.assertEqual(status_code, 200)
         content = response.content.decode()
         self.assertIn('task1', content)
         self.assertIn('first status', content)

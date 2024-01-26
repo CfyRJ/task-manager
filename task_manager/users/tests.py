@@ -66,7 +66,7 @@ class UserslTests(TestCase):
                       content)
         self.assertRedirects(response_redirect, '/users/', 302, 200)
 
-        response = self.client.get('/users/4/update/')
+        response = self.client.get('/users/7/update/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
@@ -83,7 +83,7 @@ class UserslTests(TestCase):
         self.assertRedirects(response_redirect, '/users/', 302, 200)
 
         self.client.login(username="utest10", password="ptest10")
-        response = self.client.get('/users/4/update/')
+        response = self.client.get('/users/7/update/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
@@ -97,13 +97,13 @@ class UserslTests(TestCase):
                       content)
         self.assertRedirects(response_redirect, '/users/', 302, 200)
 
-        response = self.client.get('/users/4/delete/')
+        response = self.client.get('/users/7/delete/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
         content = response.content.decode()
         self.assertIn('utest1', content)
 
-        response_redirect = self.client.post('/users/4/delete/')
+        response_redirect = self.client.post('/users/7/delete/')
 
         response = self.client.get('/users/')
         content = response.content.decode()
