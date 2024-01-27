@@ -242,3 +242,6 @@ BOOTSTRAP5 = {
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'home'
+
+
+AUTH_USER_MODEL = 'users.User'

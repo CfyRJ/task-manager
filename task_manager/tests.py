@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 
 class InitialTests(TestCase):
@@ -9,7 +9,8 @@ class InitialTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user(username='utest', password='ptest')
+        user_model = get_user_model()
+        cls.user = user_model.objects.create_user(username='utest', password='ptest')
 
     def test_index(self):
         response = self.client.get('/')

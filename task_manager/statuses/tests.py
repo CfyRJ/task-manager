@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .models import Statuse
 
 
@@ -10,8 +10,9 @@ class StatusesTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user(username='user_status',
-                                            password='pass_status')
+        user_model = get_user_model()
+        cls.user = user_model.objects.create_user(username='user_status',
+                                                  password='pass_status')
 
         cls.statuse1 = Statuse.objects.create(name='first status')
         cls.statuse2 = Statuse.objects.create(name='second status')

@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from ..statuses.models import Statuse
 from .models import Tasks
 
@@ -11,28 +11,37 @@ class TasksTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user1 = User.objects.create_user(username='user1_tasks',
-                                            password='pass1_tasks',
-                                            first_name='fname1',
-                                            last_name='lname1')
-        cls.user2 = User.objects.create_user(username='user2_tasks',
-                                            password='pass2_tasks',
-                                            first_name='fname2',
-                                            last_name='lname2')
-        cls.user3 = User.objects.create_user(username='user3_tasks',
-                                            password='pass3_tasks',
-                                            first_name='fname3',
-                                            last_name='lname3')
+        user_model = get_user_model()
+        cls.user1 = user_model.objects.create_user(username='user1_tasks',
+                                                   password='pass1_tasks',
+                                                   first_name='fname1',
+                                                   last_name='lname1')
+        cls.user2 = user_model.objects.create_user(username='user2_tasks',
+                                                   password='pass2_tasks',
+                                                   first_name='fname2',
+                                                   last_name='lname2')
+        cls.user3 = user_model.objects.create_user(username='user3_tasks',
+                                                   password='pass3_tasks',
+                                                   first_name='fname3',
+                                                   last_name='lname3')
 
-        cls.statuse1 = Statuse.objects.create(name='first status')
-        cls.statuse2 = Statuse.objects.create(name='second status')
-        cls.statuse3 = Statuse.objects.create(name='third status')
+        cls.status1 = Statuse.objects.create(name='first status')
+        cls.status2 = Statuse.objects.create(name='second status')
+        cls.status3 = Statuse.objects.create(name='third status')
 
         cls.task1 = Tasks.objects.create(name='task1',
-                                         status=cls.statuse1,
+                                         status=cls.status1,
                                          description='Fuh1',
                                          executor=cls.user2,
                                          author = cls.user1)
+    
+    def test_status(self):
+        self.client.login(username="user3_tasks", password="pass3_tasks")
+        response = self.client.get('/statuses/')
+        content = response.content.decode()
+        self.assertIn('first status', content)
+        self.assertIn('second status', content)
+        self.assertIn('third status', content)
 
     def test_error_access(self):
         response_redirect = self.client.get('/tasks/')
@@ -61,7 +70,7 @@ class TasksTests(TestCase):
 
         response_redirect = self.client.post('/tasks/create/',
                                              {'name': 'task1',
-                                              'status': self.statuse1,
+                                              'status': self.status1,
                                               'description': 'Fuh1',
                                               'executor': self.user2,
                                               'author': self.user1})
@@ -72,7 +81,7 @@ class TasksTests(TestCase):
 
         response_redirect = self.client.post('/tasks/1/update/',
                                              {'name': 'task1',
-                                              'status': self.statuse1,
+                                              'status': self.status1,
                                               'description': 'Fuh1',
                                               'executor': self.user2,
                                               'author': self.user1})
@@ -107,7 +116,7 @@ class TasksTests(TestCase):
         self.assertEqual(status_code, 200)
 
     def test_work_tasks(self):
-        self.client.login(username="user3_tasks", password="pass3_tasks")
+        self.client.login(username="user2_tasks", password="pass2_tasks")
 
         response = self.client.get('/tasks/')
         status_code = response.status_code
@@ -120,12 +129,12 @@ class TasksTests(TestCase):
 
         response_redirect = self.client.post('/tasks/create/',
                                              {'name': 'task2',
-                                              'status': self.statuse2,
+                                              'status': self.status2,
                                               'description': 'Fuh2',
                                               'executor': self.user2})
         response = self.client.get('/tasks/')
         content = response.content.decode()
-        self.assertIn('Tasks successfully created', content)
+        self.assertIn('Task successfully created', content)
         self.assertIn('task2', content)
         self.assertIn('second status', content)
         self.assertIn('fname3 lname3', content)
@@ -134,7 +143,7 @@ class TasksTests(TestCase):
 
         response_redirect = self.client.post('/tasks/2/update/',
                                              {'name': 'task2 update',
-                                              'status': self.statuse2,
+                                              'status': self.status2,
                                               'description': 'Fuh2',
                                               'executor': self.user2})
         response = self.client.get('/tasks/')

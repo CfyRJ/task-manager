@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
 
 
 class UserslTests(TestCase):
@@ -9,9 +10,10 @@ class UserslTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user(username='utest',
+        user_model = get_user_model()
+        cls.user = user_model.objects.create_user(username='utest',
                                             password='ptest')
-        cls.user = User.objects.create_user(username='utest1',
+        cls.user = user_model.objects.create_user(username='utest1',
                                             password='ptest1')
 
     def test_users(self):

@@ -5,11 +5,13 @@ from django.contrib.auth.models import User
 
 from string import ascii_lowercase, ascii_uppercase, digits
 
+from django.contrib.auth import get_user_model
+
 
 class CreateUserForm(UserCreationForm):
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('first_name', 'last_name',
                   'username', 'password1', 'password2')
 

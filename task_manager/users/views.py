@@ -2,7 +2,7 @@ from typing import Any
 from django.http import HttpRequest, HttpResponse
 from django.views import View
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
@@ -22,7 +22,7 @@ MESS_PERMISSION = "You do not have permission to modify another user."
 class IndexIndex(View):
 
     def get(self, request, *args, **kwargs):
-        users = User.objects.order_by('id')
+        users = get_user_model().objects.order_by('id')
 
         messages_ = messages.get_messages(request)
         return render(request,
