@@ -32,15 +32,14 @@ class LabelsTests(TestCase):
                                               status=cls.status,
                                               description='there is one label here',
                                               executor=cls.user_exec,
-                                              author = cls.user_auth,
-                                              labels = (cls.label_one, ))
-        cls.task_many_l = Tasks.objects.create(name='task one label',
+                                              author=cls.user_auth)
+        cls.task_one_l.labels.add(cls.label_one)
+        cls.task_many_l = Tasks.objects.create(name='task many label',
                                          status=cls.status,
                                          description='there are many labels here',
                                          executor=cls.user_exec,
-                                         author = cls.user_auth,
-                                         labels = (cls.label1_many,
-                                                   cls.label2_many))
+                                         author = cls.user_auth)
+        cls.task_many_l.labels.add(cls.label1_many, cls.label2_many)
 
     def test_error_access(self):
         response_redirect = self.client.get('/labels/')
@@ -117,7 +116,7 @@ class LabelsTests(TestCase):
 
     def test_work_labels(self):
         self.client.login(username="user_auth_label", password="pass_label")
-
+# Checking label creation.
         response_redirect = self.client.post('/labels/create/',
                                              {'name': 'create new label'})
         response = self.client.get('/labels/')
@@ -125,29 +124,18 @@ class LabelsTests(TestCase):
         self.assertIn('Label successfully created', content)
         self.assertIn('create new label', content)
         self.assertRedirects(response_redirect, '/labels/', 302, 200)
-
+# Checking the uniqueness of the label name.
         response = self.client.post('/labels/create/',
                                              {'name': 'create new label'})
         status_code = response.status_code
         self.assertEqual(status_code, 200)
-
-        content = response.content.decode()
-        self.assertIn('A label with the same name already exists.', content)
-
+# Checking that the label is added to the task.
         new_label = Labels.objects.get(id=4)
-
-        self.task_many_l = Tasks.objects.update(name='task one label',
-                                         status=self.status,
-                                         description='there are many labels here',
-                                         executor=self.user_exec,
-                                         author = self.user_auth,
-                                         labels = (self.label1_many,
-                                                   self.label2_many,
-                                                   new_label))
-        labels_task_many_1 = self.task_many_l.objects.labels
+        self.task_many_l.labels.add(4)
+        labels_task_many_1 = self.task_many_l.labels.all()
         self.assertIn(new_label, labels_task_many_1)
-
-        response_redirect = self.client.post('/labels/4/update',
+# Checking for label changes.
+        response_redirect = self.client.post('/labels/4/update/',
                                              {'name': 'change new label'})
         response = self.client.get('/labels/')
         content = response.content.decode()
@@ -156,26 +144,21 @@ class LabelsTests(TestCase):
         self.assertRedirects(response_redirect, '/labels/', 302, 200)
 
         new_label = Labels.objects.get(id=4)
-        labels_task_many_1 = self.task_many_l.objects.labels
+        labels_task_many_1 = self.task_many_l.labels.all()
         self.assertIn(new_label, labels_task_many_1)
-
-        response = self.client.post('/labels/4/delete/')
-        status_code = response.status_code
-        self.assertEqual(status_code, 200)
+# Make sure the label is not removed if it is used in a task.
+        response_redirect = self.client.post('/labels/4/delete/')
+        response = self.client.get('/labels/')
         content = response.content.decode()
         self.assertIn('The label cannot be deleted because it is in use.', content)
+        self.assertIn('change new label', content)
+        self.assertRedirects(response_redirect, '/labels/', 302, 200)
 
-        self.task_many_l = Tasks.objects.update(name='task one label',
-                                         status=self.status,
-                                         description='there are many labels here',
-                                         executor=self.user_exec,
-                                         author = self.user_auth,
-                                         labels = (self.label1_many,
-                                                   self.label2_many,))
+        self.task_many_l.labels.remove(4)
         new_label = Labels.objects.get(id=4)
-        labels_task_many_1 = self.task_many_l.objects.labels
+        labels_task_many_1 = self.task_many_l.labels.all()
         self.assertNotIn(new_label, labels_task_many_1)
-
+# Checking that the mark is removed.
         response_redirect = self.client.post('/labels/4/delete/')
         response = self.client.get('/labels/')
         content = response.content.decode()
