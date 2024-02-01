@@ -1,10 +1,17 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from ..statuses.models import Statuse
+from ..labels.models import Labels
 from .models import Tasks
 
 
 class TasksTests(TestCase):
+    @staticmethod
+    def get_model_id_by_name(model: ('Users', Statuse, Labels, Tasks),
+                             name: str) -> int:
+        if model == 'Users':
+            return get_user_model().objects.get(username=name).id
+        return model.objects.get(name=name).id
 
     def setUp(self):
         self.client = Client()
@@ -12,36 +19,33 @@ class TasksTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         user_model = get_user_model()
-        cls.user1 = user_model.objects.create_user(username='user1_tasks',
-                                                   password='pass1_tasks',
-                                                   first_name='fname1',
-                                                   last_name='lname1')
-        cls.user2 = user_model.objects.create_user(username='user2_tasks',
-                                                   password='pass2_tasks',
-                                                   first_name='fname2',
-                                                   last_name='lname2')
-        cls.user3 = user_model.objects.create_user(username='user3_tasks',
-                                                   password='pass3_tasks',
-                                                   first_name='fname3',
-                                                   last_name='lname3')
+        cls.user_author = user_model.objects.create_user(username='author_tasks',
+                                                         password='pass',
+                                                         first_name='Author',
+                                                         last_name='Tasks')
+        cls.user_executor = user_model.objects.create_user(username='executor_tasks',
+                                                           password='pass',
+                                                           first_name='Executor',
+                                                           last_name='Tasks')
+        cls.user_delete = user_model.objects.create_user(username='user_for_delete',
+                                                         password='pass',
+                                                         first_name='User for',
+                                                         last_name='Delete')
 
-        cls.status1 = Statuse.objects.create(name='first status')
-        cls.status2 = Statuse.objects.create(name='second status')
-        cls.status3 = Statuse.objects.create(name='third status')
+        cls.status_check = Statuse.objects.create(name='Status for check')
+        cls.status_update = Statuse.objects.create(name='Status for update')
+        cls.status_delete = Statuse.objects.create(name='Status for delete')
 
-        cls.task1 = Tasks.objects.create(name='task1',
-                                         status=cls.status1,
-                                         description='Fuh1',
-                                         executor=cls.user2,
-                                         author = cls.user1)
-    
-    def test_status(self):
-        self.client.login(username="user3_tasks", password="pass3_tasks")
-        response = self.client.get('/statuses/')
-        content = response.content.decode()
-        self.assertIn('first status', content)
-        self.assertIn('second status', content)
-        self.assertIn('third status', content)
+        cls.label_check_1m = Labels.objects.create(name='First label for check')
+        cls.label_check_2m = Labels.objects.create(name='Second label for check')
+        cls.label_delete = Labels.objects.create(name='Label for delete')
+
+        cls.task_check = Tasks.objects.create(name='Test task',
+                                              status=cls.status_check,
+                                              description='Test description',
+                                              executor=cls.user_executor,
+                                              author = cls.user_author)
+        cls.task_check.labels.add(cls.label_check_1m, cls.label_check_2m)
 
     def test_error_access(self):
         response_redirect = self.client.get('/tasks/')
@@ -68,93 +72,167 @@ class TasksTests(TestCase):
         self.assertIn('You are not authorized! Please come in.', content)
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
+        user_executor_id = self.get_model_id_by_name('Users', 'executor_tasks')
+        status_id = self.get_model_id_by_name(Statuse, 'Status for check')
+
         response_redirect = self.client.post('/tasks/create/',
-                                             {'name': 'task1',
-                                              'status': self.status1,
-                                              'description': 'Fuh1',
-                                              'executor': self.user2,
-                                              'author': self.user1})
+                                             {'name': 'Test task',
+                                              'status': status_id,
+                                              'description': 'This is somethong',
+                                              'executor': user_executor_id,
+                                              'author': self.user_author})
         response = self.client.get('/login/')
         content = response.content.decode()
         self.assertIn('You are not authorized! Please come in.', content)
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
-        response_redirect = self.client.post('/tasks/1/update/',
+        task_id = self.get_model_id_by_name(Tasks, 'Test task')
+
+        response_redirect = self.client.post(f'/tasks/{task_id}/update/',
                                              {'name': 'task1',
-                                              'status': self.status1,
+                                              'status': status_id,
                                               'description': 'Fuh1',
-                                              'executor': self.user2,
-                                              'author': self.user1})
+                                              'executor': user_executor_id,
+                                              'author': self.user_author})
         response = self.client.get('/login/')
         content = response.content.decode()
         self.assertIn('You are not authorized! Please come in.', content)
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
-        response_redirect = self.client.post('/tasks/1/delete/')
+        response_redirect = self.client.post(f'/tasks/{task_id}/update/')
         response = self.client.get('/login/')
         content = response.content.decode()
         self.assertIn('You are not authorized! Please come in.', content)
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
     def test_successfull_access(self):
-        self.client.login(username="user1_tasks", password="pass1_tasks")
+        self.client.login(username="author_tasks", password="pass")
+        task_id = self.get_model_id_by_name(Tasks, 'Test task')
 
         response = self.client.get('/tasks/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
+        content = response.content.decode()
+        self.assertIn('Test task', content)
+        self.assertIn('Status for check', content)
+        self.assertIn('Author Tasks', content)
+        self.assertIn('Executor Tasks', content)
+
+        response = self.client.get(f'/tasks/{task_id}/')
+        status_code = response.status_code
+        self.assertEqual(status_code, 200)
+        content = response.content.decode()
+        self.assertIn('Test task', content)
+        self.assertIn('Status for check', content)
+        self.assertIn('Author Tasks', content)
+        self.assertIn('Executor Tasks', content)
+        self.assertIn('First label for check', content)
+        self.assertIn('Second label for check', content)
 
         response = self.client.get('/tasks/create/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
-        response = self.client.get('/tasks/1/update/')
+        response = self.client.get(f'/tasks/{task_id}/update/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
-        response = self.client.get('/tasks/1/delete/')
+        response = self.client.get(f'/tasks/{task_id}/delete/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
     def test_work_tasks(self):
-        self.client.login(username="user2_tasks", password="pass2_tasks")
-
+        self.client.login(username="author_tasks", password="pass")
+        user_delete_id = self.get_model_id_by_name('Users', 'user_for_delete')
+        status_update_id = self.get_model_id_by_name(Statuse, 'Status for update')
+        status_delete_id = self.get_model_id_by_name(Statuse, 'Status for delete')
+        label_id_1 = self.get_model_id_by_name(Labels, 'First label for check')
+        label_id_delete = self.get_model_id_by_name(Labels, 'Label for delete')
+# Checking the creation of the task.
+        response_redirect = self.client.post('/tasks/create/',
+                                             {'name': 'New work',
+                                              'status': status_delete_id,
+                                              'description': 'Sleep',
+                                              'executor': user_delete_id,
+                                              'labels': (label_id_1, label_id_delete)})
         response = self.client.get('/tasks/')
+        content = response.content.decode()
+        self.assertIn('New work', content)
+        self.assertIn('Status for delete', content)
+        self.assertIn('User for Delete', content)
+        self.assertRedirects(response_redirect, '/tasks/', 302, 200)
+# Checking the creation of a task of the same name.
+        response = self.client.post('/tasks/create/',
+                                             {'name': 'New work',
+                                              'status': status_update_id,
+                                              'labels': label_id_1})
         status_code = response.status_code
         self.assertEqual(status_code, 200)
-        content = response.content.decode()
-        self.assertIn('task1', content)
-        self.assertIn('first status', content)
-        self.assertIn('fname1 lname1', content)
-        self.assertIn('fname2 lname2', content)
 
-        response_redirect = self.client.post('/tasks/create/',
-                                             {'name': 'task2',
-                                              'status': self.status2,
-                                              'description': 'Fuh2',
-                                              'executor': self.user2})
-        response = self.client.get('/tasks/')
+        new_task_id = self.get_model_id_by_name(Tasks, 'New work')
+# Checking the presence of labels in the task.
+        response = self.client.get(f'/tasks/{new_task_id}/')
         content = response.content.decode()
-        self.assertIn('Task successfully created', content)
-        self.assertIn('task2', content)
-        self.assertIn('second status', content)
-        self.assertIn('fname3 lname3', content)
-        self.assertIn('fname2 lname2', content)
-        self.assertRedirects(response_redirect, '/tasks/', 302, 200)
-
-        response_redirect = self.client.post('/tasks/2/update/',
+        self.assertIn('First label for check', content)
+        self.assertIn('Label for delete', content)
+# Checks that the label in use cannot be deleted.
+        response_redirect = self.client.post(f'/labels/{label_id_delete}/delete/')
+        response = self.client.get('/labels/')
+        content = response.content.decode()
+        self.assertIn('The label cannot be deleted because it is in use.', content)
+        self.assertIn('Label for delete', content)
+        self.assertRedirects(response_redirect, '/labels/', 302, 200)
+# Checks that the status in use cannot be deleted.
+        response_redirect = self.client.post(f'/statuses/{status_delete_id}/delete/')
+        response = self.client.get('/statuses/')
+        content = response.content.decode()
+        self.assertIn('The status cannot be deleted because it is in use.', content)
+        self.assertIn('Status for delete', content)
+        self.assertRedirects(response_redirect, '/statuses/', 302, 200)
+# Checks that the user in use cannot be deleted.
+        self.client.login(username="user_for_delete", password="pass")
+        response_redirect = self.client.post(f'/users/{user_delete_id}/delete/')
+        response = self.client.get('/users/')
+        content = response.content.decode()
+        self.assertIn('The user cannot be deleted because it is in use.', content)
+        self.assertIn('User for Delete', content)
+        self.assertRedirects(response_redirect, '/users/', 302, 200)
+        self.client.login(username="author_tasks", password="pass")
+# Checking the task update.
+        response_redirect = self.client.post(f'/tasks/{new_task_id}/update/',
                                              {'name': 'task2 update',
-                                              'status': self.status2,
-                                              'description': 'Fuh2',
-                                              'executor': self.user2})
+                                              'status': status_update_id,
+                                              'labels': label_id_1})
         response = self.client.get('/tasks/')
         content = response.content.decode()
-        self.assertIn('Tasks successfully changed', content)
         self.assertIn('task2 update', content)
         self.assertRedirects(response_redirect, '/tasks/', 302, 200)
-
-        response_redirect = self.client.post('/tasks/2/delete/')
+# Check that the label can be removed.
+        response_redirect = self.client.post(f'/labels/{label_id_delete}/delete/')
+        response = self.client.get('/labels/')
+        content = response.content.decode()
+        self.assertIn('Label deleted successfully', content)
+        self.assertNotIn('Label for delete', content)
+        self.assertRedirects(response_redirect, '/labels/', 302, 200)
+# Check that the status can be removed.
+        response_redirect = self.client.post(f'/statuses/{status_delete_id}/delete/')
+        response = self.client.get('/statuses/')
+        content = response.content.decode()
+        self.assertIn('Status deleted successfully', content)
+        self.assertNotIn('Status for delete', content)
+        self.assertRedirects(response_redirect, '/statuses/', 302, 200)
+# Check that the user can be removed.
+        self.client.login(username="user_for_delete", password="pass")
+        response_redirect = self.client.post(f'/users/{user_delete_id}/delete/')
+        response = self.client.get('/users/')
+        content = response.content.decode()
+        self.assertIn('User deleted successfully', content)
+        self.assertNotIn('User for Delete', content)
+        self.assertRedirects(response_redirect, '/users/', 302, 200)
+        self.client.login(username="author_tasks", password="pass")
+# Check that the task can be removed.
+        response_redirect = self.client.post(f'/tasks/{new_task_id}/delete/')
         response = self.client.get('/tasks/')
         content = response.content.decode()
-        self.assertIn('Tasks deleted successfully', content)
         self.assertNotIn('task2 update', content)
         self.assertRedirects(response_redirect, '/tasks/', 302, 200)

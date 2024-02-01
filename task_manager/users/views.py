@@ -14,6 +14,7 @@ from .forms import CreateUserForm
 from django.shortcuts import redirect
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models.deletion import ProtectedError
 
 
 MESS_PERMISSION = "You do not have permission to modify another user."
@@ -90,3 +91,11 @@ class DeleteUser(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     def get_object(self, *args, **kwargs):
         user = self.request.user
         return user
+    
+    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        try:
+            return super().post(request, *args, **kwargs)
+        except ProtectedError:
+            messages.add_message(request, messages.ERROR,
+                                 "The user cannot be deleted because it is in use.")
+            return redirect(reverse_lazy('index_users'))

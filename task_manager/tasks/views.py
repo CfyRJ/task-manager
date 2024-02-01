@@ -1,9 +1,7 @@
 from typing import Any
 from django.forms.forms import BaseForm
 from django.http import HttpRequest, HttpResponse
-from django.http import request
 
-from django.forms.models import BaseModelForm
 from django.shortcuts import render
 from django.views import View
 from django.contrib import messages
@@ -50,9 +48,16 @@ class CreateTask(MixinMessage, SuccessMessageMixin, CreateView):
     success_message = 'Task successfully created'
 
     def form_valid(self, form: BaseForm):
+        labels_id = form.cleaned_data['labels']
+        task_name = form.cleaned_data['name']
+
         instance = form.save(commit=False)
         instance.author = self.request.user
         instance.save()
+
+        task = Tasks.objects.get(name=task_name)
+        for label_id in labels_id:
+            task.labels.add(label_id)
 
         messages.add_message(self.request, messages.SUCCESS, self.success_message)
 
@@ -92,8 +97,10 @@ class ShowTask(View):
     def get(self, request, *args, **kwargs):
         id_task = kwargs.get('pk')
         task = Tasks.objects.get(id=id_task)
+        labels = task.labels.all()
         return render(request,
                       'tasks/show_task.html',
                       context={
                           'task': task,
+                          'labels': labels,
                       })

@@ -13,35 +13,15 @@ class LabelsTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         user_model = get_user_model()
-        cls.user_auth = user_model.objects.create_user(username='user_auth_label',
+        cls.user_auth = user_model.objects.create_user(username='user_label',
                                                   password='pass_label',
                                                   first_name='user',
                                                   last_name='author')
-        cls.user_exec = user_model.objects.create_user(username='user_exec_label',
-                                                  password='pass_label',
-                                                  first_name='user',
-                                                  last_name='executor')
-
-        cls.status = Statuse.objects.create(name='Status')
-
         cls.label_one = Labels.objects.create(name='One label')
-        cls.label1_many = Labels.objects.create(name='Many1 label')
-        cls.label2_many = Labels.objects.create(name='Many2 label')
-
-        cls.task_one_l = Tasks.objects.create(name='task one label',
-                                              status=cls.status,
-                                              description='there is one label here',
-                                              executor=cls.user_exec,
-                                              author=cls.user_auth)
-        cls.task_one_l.labels.add(cls.label_one)
-        cls.task_many_l = Tasks.objects.create(name='task many label',
-                                         status=cls.status,
-                                         description='there are many labels here',
-                                         executor=cls.user_exec,
-                                         author = cls.user_auth)
-        cls.task_many_l.labels.add(cls.label1_many, cls.label2_many)
 
     def test_error_access(self):
+        id = self.label_one.id
+
         response_redirect = self.client.get('/labels/')
         response = self.client.get('/login/')
         content = response.content.decode()
@@ -54,13 +34,13 @@ class LabelsTests(TestCase):
         self.assertIn('You are not authorized! Please come in.', content)
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
-        response_redirect = self.client.get('/labels/1/update/')
+        response_redirect = self.client.get(f'/labels/{id}/update/')
         response = self.client.get('/login/')
         content = response.content.decode()
         self.assertIn('You are not authorized! Please come in.', content)
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
-        response_redirect = self.client.get('/labels/1/delete/')
+        response_redirect = self.client.get(f'/labels/{id}/delete/')
         response = self.client.get('/login/')
         content = response.content.decode()
         self.assertIn('You are not authorized! Please come in.', content)
@@ -73,21 +53,22 @@ class LabelsTests(TestCase):
         self.assertIn('You are not authorized! Please come in.', content)
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
-        response_redirect = self.client.post('/labels/1/update/',
+        response_redirect = self.client.post(f'/labels/{id}/update/',
                                              {'name': 'error labels'})
         response = self.client.get('/login/')
         content = response.content.decode()
         self.assertIn('You are not authorized! Please come in.', content)
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
-        response_redirect = self.client.post('/labels/1/delete/')
+        response_redirect = self.client.post(f'/labels/{id}/delete/')
         response = self.client.get('/login/')
         content = response.content.decode()
         self.assertIn('You are not authorized! Please come in.', content)
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
     def test_successfull_access(self):
-        self.client.login(username="user_auth_label", password="pass_label")
+        self.client.login(username="user_label", password="pass_label")
+        id = self.label_one.id
 
         response = self.client.get('/labels/')
         status_code = response.status_code
@@ -97,25 +78,23 @@ class LabelsTests(TestCase):
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
-        response = self.client.get('/labels/1/update/')
+        response = self.client.get(f'/labels/{id}/update/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
-        response = self.client.get('/labels/1/delete/')
+        response = self.client.get(f'/labels/{id}/delete/')
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
     def test_show_labels(self):
-        self.client.login(username="user_auth_label", password="pass_label")
+        self.client.login(username="user_label", password="pass_label")
 
         response = self.client.get('/labels/')
         content = response.content.decode()
         self.assertIn('One label', content)
-        self.assertIn('Many1 label', content)
-        self.assertIn('Many2 label', content)
 
     def test_work_labels(self):
-        self.client.login(username="user_auth_label", password="pass_label")
+        self.client.login(username="user_label", password="pass_label")
 # Checking label creation.
         response_redirect = self.client.post('/labels/create/',
                                              {'name': 'create new label'})
@@ -129,37 +108,18 @@ class LabelsTests(TestCase):
                                              {'name': 'create new label'})
         status_code = response.status_code
         self.assertEqual(status_code, 200)
-# Checking that the label is added to the task.
-        new_label = Labels.objects.get(id=4)
-        self.task_many_l.labels.add(4)
-        labels_task_many_1 = self.task_many_l.labels.all()
-        self.assertIn(new_label, labels_task_many_1)
+
+        new_label_id = Labels.objects.get(name='create new label').id
 # Checking for label changes.
-        response_redirect = self.client.post('/labels/4/update/',
+        response_redirect = self.client.post(f'/labels/{new_label_id}/update/',
                                              {'name': 'change new label'})
         response = self.client.get('/labels/')
         content = response.content.decode()
         self.assertIn('Label successfully changed', content)
         self.assertIn('change new label', content)
         self.assertRedirects(response_redirect, '/labels/', 302, 200)
-
-        new_label = Labels.objects.get(id=4)
-        labels_task_many_1 = self.task_many_l.labels.all()
-        self.assertIn(new_label, labels_task_many_1)
-# Make sure the label is not removed if it is used in a task.
-        response_redirect = self.client.post('/labels/4/delete/')
-        response = self.client.get('/labels/')
-        content = response.content.decode()
-        self.assertIn('The label cannot be deleted because it is in use.', content)
-        self.assertIn('change new label', content)
-        self.assertRedirects(response_redirect, '/labels/', 302, 200)
-
-        self.task_many_l.labels.remove(4)
-        new_label = Labels.objects.get(id=4)
-        labels_task_many_1 = self.task_many_l.labels.all()
-        self.assertNotIn(new_label, labels_task_many_1)
-# Checking that the mark is removed.
-        response_redirect = self.client.post('/labels/4/delete/')
+# Checking that the label is removed.
+        response_redirect = self.client.post(f'/labels/{new_label_id}/delete/')
         response = self.client.get('/labels/')
         content = response.content.decode()
         self.assertIn('Label deleted successfully', content)
