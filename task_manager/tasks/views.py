@@ -1,4 +1,5 @@
 from typing import Any
+from django.db.models.query import QuerySet
 from django.forms.forms import BaseForm
 from django.http import HttpRequest, HttpResponse
 
@@ -17,6 +18,9 @@ from django.utils.translation import gettext as _
 
 from django.shortcuts import redirect
 
+from django_filters.views import FilterView
+from .filters import TasksFilter
+
 
 class MixinMessage(LoginRequiredMixin):
     redirect_field_name = ""
@@ -27,17 +31,16 @@ class MixinMessage(LoginRequiredMixin):
         return super().get_login_url()
 
 
-class IndexSTasks(MixinMessage,  View):
-    def get(self, request, *args, **kwargs):
-        tasks = Tasks.objects.order_by('id')
+class IndexSTasks(MixinMessage, FilterView):
+    model = Tasks
+    template_name = 'tasks/index_tasks.html'
+    filterset_class = TasksFilter
 
-        messages_ = messages.get_messages(request)
-        return render(request,
-                      'tasks/index_tasks.html',
-                      context={
-                          'messages': messages_,
-                          'tasks': tasks,
-                      })
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['messages'] = messages.get_messages(self.request)
+
+        return context
 
 
 class CreateTask(MixinMessage, SuccessMessageMixin, CreateView):

@@ -1,15 +1,15 @@
 install:
 	poetry install
 
-publish:
-	poetry publish --dry-run
+# publish:
+# 	poetry publish --dry-run
 
-package-install:
-	python3 -m pip install --user dist/*.whl
+# package-install:
+# 	python3 -m pip install --user dist/*.whl
 
-package-uninstall-hc:
-	pip uninstall hexlet-code
-	rm -r dist
+# package-uninstall-hc:
+# 	pip uninstall hexlet-code
+# 	rm -r dist
 
 start_debug:
 	python manage.py runserver

@@ -236,3 +236,70 @@ class TasksTests(TestCase):
         content = response.content.decode()
         self.assertNotIn('task2 update', content)
         self.assertRedirects(response_redirect, '/tasks/', 302, 200)
+
+    def test_filter_task(self):
+        self.client.login(username="user_for_delete", password="pass")
+
+        user_delete_id = self.get_model_id_by_name('Users', 'user_for_delete')
+
+        status_check_id = self.get_model_id_by_name(Statuse, 'Status for check')
+        status_update_id = self.get_model_id_by_name(Statuse, 'Status for update')
+
+        label_id_1 = self.get_model_id_by_name(Labels, 'First label for check')
+        label_id_delete = self.get_model_id_by_name(Labels, 'Label for delete')
+
+        self.client.post('/tasks/create/',
+                         {'name': 'Check',
+                          'status': status_check_id,
+                          'labels': label_id_1})
+        self.client.post('/tasks/create/',
+                         {'name': 'Update delete',
+                          'status': status_update_id,
+                          'labels': label_id_delete})
+        self.client.post('/tasks/create/',
+                         {'name': 'Executor delete',
+                          'status': status_check_id,
+                          'executor': user_delete_id,
+                          'labels': label_id_1})
+        
+        response = self.client.get('/tasks/')
+        content = response.content.decode()
+        self.assertIn('Test task', content)
+        self.assertIn('Check', content)
+        self.assertIn('Update delete', content)
+        self.assertIn('Executor delete', content)
+
+        response = self.client.get(f'/tasks/?status={status_check_id}')
+        content = response.content.decode()
+        self.assertIn('Test task', content)
+        self.assertIn('Check', content)
+        self.assertNotIn('Update delete', content)
+        self.assertIn('Executor delete', content)
+
+        response = self.client.get(f'/tasks/?labels={label_id_delete}')
+        content = response.content.decode()
+        self.assertNotIn('Test task', content)
+        self.assertNotIn('Check', content)
+        self.assertIn('Update delete', content)
+        self.assertNotIn('Executor delete', content)
+
+        response = self.client.get(f'/tasks/?executor={user_delete_id}')
+        content = response.content.decode()
+        self.assertNotIn('Test task', content)
+        self.assertNotIn('Check', content)
+        self.assertNotIn('Update delete', content)
+        self.assertIn('Executor delete', content)
+
+        response = self.client.get('/tasks/?author=on')
+        content = response.content.decode()
+        self.assertNotIn('Test task', content)
+        self.assertIn('Check', content)
+        self.assertIn('Update delete', content)
+        self.assertIn('Executor delete', content)
+
+        response = self.client.get(f'/tasks/?status={status_check_id}&executor={user_delete_id}&labels={label_id_delete}&author=on')
+        content = response.content.decode()
+        self.assertNotIn('Test task', content)
+        self.assertNotIn('Check', content)
+        self.assertNotIn('Update delete', content)
+        self.assertNotIn('Executor delete', content)
