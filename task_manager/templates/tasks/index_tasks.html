@@ -37,7 +37,11 @@
             <td><a href="{% url 'show_task' task.id %}">{{ task.name }}</a></td>
             <td>{{ task.status }}</td>
             <td>{{ task.author }}</td>
+            {% if task.executor %}
             <td>{{ task.executor }}</td>
+            {% else %}
+            <td></td>
+            {% endif %}
             <td>{{ task.timestamp }}</td>
             <td>
               <a href="{% url 'update_task' task.id %}">{% translate "Change" %}</a>
