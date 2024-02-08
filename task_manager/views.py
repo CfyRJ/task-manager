@@ -8,6 +8,8 @@ from .forms import LoginUserForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import LogoutView
 
+from django.http import HttpResponse
+
 
 class IndexView(View):
     def get(self, request, *args, **kwargs):
