@@ -1,7 +1,7 @@
 from django_filters import FilterSet
 from .models import Tasks
 from django import forms
-from django_filters import ChoiceFilter, BooleanFilter, CharFilter
+from django_filters import ChoiceFilter, BooleanFilter
 from ..labels.models import Labels
 
 

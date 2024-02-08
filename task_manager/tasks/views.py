@@ -1,5 +1,4 @@
 from typing import Any
-from django.db.models.query import QuerySet
 from django.forms.forms import BaseForm
 from django.http import HttpRequest, HttpResponse
 

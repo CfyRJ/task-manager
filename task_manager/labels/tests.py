@@ -1,8 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from .models import Labels
-from ..statuses.models import Statuse
-from ..tasks.models import Tasks
 
 
 class LabelsTests(TestCase):

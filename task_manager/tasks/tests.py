@@ -1,13 +1,13 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
-from ..statuses.models import Statuse
+from ..statuses.models import Status
 from ..labels.models import Labels
 from .models import Tasks
 
 
 class TasksTests(TestCase):
     @staticmethod
-    def get_model_id_by_name(model: ('Users', Statuse, Labels, Tasks),
+    def get_model_id_by_name(model: ('Users', Status, Labels, Tasks),
                              name: str) -> int:
         if model == 'Users':
             return get_user_model().objects.get(username=name).id
@@ -32,9 +32,9 @@ class TasksTests(TestCase):
                                                          first_name='User for',
                                                          last_name='Delete')
 
-        cls.status_check = Statuse.objects.create(name='Status for check')
-        cls.status_update = Statuse.objects.create(name='Status for update')
-        cls.status_delete = Statuse.objects.create(name='Status for delete')
+        cls.status_check = Status.objects.create(name='Status for check')
+        cls.status_update = Status.objects.create(name='Status for update')
+        cls.status_delete = Status.objects.create(name='Status for delete')
 
         cls.label_check_1m = Labels.objects.create(name='First label for check')
         cls.label_check_2m = Labels.objects.create(name='Second label for check')
@@ -73,7 +73,7 @@ class TasksTests(TestCase):
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
         user_executor_id = self.get_model_id_by_name('Users', 'executor_tasks')
-        status_id = self.get_model_id_by_name(Statuse, 'Status for check')
+        status_id = self.get_model_id_by_name(Status, 'Status for check')
 
         response_redirect = self.client.post('/tasks/create/',
                                              {'name': 'Test task',
@@ -144,8 +144,8 @@ class TasksTests(TestCase):
     def test_work_tasks(self):
         self.client.login(username="author_tasks", password="pass")
         user_delete_id = self.get_model_id_by_name('Users', 'user_for_delete')
-        status_update_id = self.get_model_id_by_name(Statuse, 'Status for update')
-        status_delete_id = self.get_model_id_by_name(Statuse, 'Status for delete')
+        status_update_id = self.get_model_id_by_name(Status, 'Status for update')
+        status_delete_id = self.get_model_id_by_name(Status, 'Status for delete')
         label_id_1 = self.get_model_id_by_name(Labels, 'First label for check')
         label_id_delete = self.get_model_id_by_name(Labels, 'Label for delete')
 # Checking the creation of the task.
@@ -242,8 +242,8 @@ class TasksTests(TestCase):
 
         user_delete_id = self.get_model_id_by_name('Users', 'user_for_delete')
 
-        status_check_id = self.get_model_id_by_name(Statuse, 'Status for check')
-        status_update_id = self.get_model_id_by_name(Statuse, 'Status for update')
+        status_check_id = self.get_model_id_by_name(Status, 'Status for check')
+        status_update_id = self.get_model_id_by_name(Status, 'Status for update')
 
         label_id_1 = self.get_model_id_by_name(Labels, 'First label for check')
         label_id_delete = self.get_model_id_by_name(Labels, 'Label for delete')

@@ -6,7 +6,7 @@
   <main>
     <h1 class="my-4">{% translate "Statuses" %}</h1>
 
-    <a class="btn btn-primary mb-3" href="{% url 'create_statuse' %}">{% translate "Create status" %}</a>
+    <a class="btn btn-primary mb-3" href="{% url 'create_status' %}">{% translate "Create status" %}</a>
 
     <table class="table table-striped">
       <thead>
@@ -18,16 +18,16 @@
         </tr>
       </thead>
 
-      {% for statuse in statuses %}
+      {% for status in statuses %}
       <tbody>
           <tr>
-            <td>{{ statuse.id }}</td>
-            <td>{{ statuse.name }}</td>
-            <td>{{ statuse.timestamp }}</td>
+            <td>{{ status.id }}</td>
+            <td>{{ status.name }}</td>
+            <td>{{ status.timestamp }}</td>
             <td>
-              <a href="{% url 'update_statuse' statuse.id %}">{% translate "Change" %}</a>
+              <a href="{% url 'update_status' status.id %}">{% translate "Change" %}</a>
               <br>
-              <a href="{% url 'delete_statuse' statuse.id %}">{% translate "Delete" %}</a>
+              <a href="{% url 'delete_status' status.id %}">{% translate "Delete" %}</a>
             </td>
           </tr>
       </tbody>

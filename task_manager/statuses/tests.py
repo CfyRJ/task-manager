@@ -1,11 +1,10 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
-from .models import Statuse
-from django.db.models import Count
+from .models import Status
 
 
 def get_status_id_by_name(name: str) -> int:
-    return Statuse.objects.get(name=name).id
+    return Status.objects.get(name=name).id
 
 
 class StatusesTests(TestCase):
@@ -19,8 +18,8 @@ class StatusesTests(TestCase):
         cls.user = user_model.objects.create_user(username='user_status',
                                                   password='pass_status')
 
-        cls.statuse1 = Statuse.objects.create(name='first status')
-        cls.statuse2 = Statuse.objects.create(name='second status')
+        cls.status1 = Status.objects.create(name='first status')
+        cls.status2 = Status.objects.create(name='second status')
     
     def test_error_access(self):
         id = get_status_id_by_name('first status')
@@ -109,7 +108,7 @@ class StatusesTests(TestCase):
                                      {'name': 'test status'})
         status_code = response.status_code
         self.assertEqual(status_code, 200)
-        count_statuses = len(Statuse.objects.all())
+        count_statuses = len(Status.objects.all())
         self.assertEqual(count_statuses, 3)
 
         new_status_id = get_status_id_by_name('test status')
