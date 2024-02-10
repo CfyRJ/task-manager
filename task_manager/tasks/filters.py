@@ -6,7 +6,10 @@ from ..labels.models import Labels
 
 
 class TasksFilter(FilterSet):
-    labels = ChoiceFilter(choices=lambda: [(label.id, label.name) for label in Labels.objects.all()])
+    labels = ChoiceFilter(choices=lambda:
+                          [(label.id, label.name)
+                           for label
+                           in Labels.objects.all()])
     author = BooleanFilter(widget=forms.CheckboxInput, method='filter_author')
 
     def filter_author(self, queryset, *args, **kwargs):

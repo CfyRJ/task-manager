@@ -1,20 +1,20 @@
 from typing import Any
 from django.http import HttpRequest, HttpResponse
-from django.views import View
+from django.shortcuts import render, redirect
+from django.db.models.deletion import ProtectedError
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.utils.translation import gettext as _
-
-from django.views.generic import CreateView, UpdateView, DeleteView
-from django.contrib.messages.views import SuccessMessageMixin
-from .forms import CreateUserForm
-
-from django.shortcuts import redirect
-
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models.deletion import ProtectedError
+from django.contrib.messages.views import SuccessMessageMixin
+
+from django.views import View
+from django.views.generic import CreateView, UpdateView, DeleteView
+
+from django.utils.translation import gettext as _
+from django.urls import reverse_lazy
+
+from .forms import CreateUserForm
 
 
 MESS_PERMISSION = "You do not have permission to modify another user."
@@ -91,11 +91,16 @@ class DeleteUser(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     def get_object(self, *args, **kwargs):
         user = self.request.user
         return user
-    
-    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+
+    def post(self,
+             request: HttpRequest,
+             *args: str,
+             **kwargs: Any) -> HttpResponse:
         try:
             return super().post(request, *args, **kwargs)
         except ProtectedError:
-            messages.add_message(request, messages.ERROR,
-                                 "The user cannot be deleted because it is in use.")
+            messages.add_message(
+                request, messages.ERROR,
+                "The user cannot be deleted because it is in use."
+                )
             return redirect(reverse_lazy('index_users'))

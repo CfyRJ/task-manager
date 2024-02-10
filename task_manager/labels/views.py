@@ -1,21 +1,19 @@
 from typing import Any
-from django.forms.forms import BaseForm
 from django.http import HttpRequest, HttpResponse
-from django.http.response import HttpResponse
-from django.shortcuts import render
-from django.views import View
-from django.contrib import messages
-from .models import Labels
+from django.shortcuts import render, redirect
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
+
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+
+from .models import Labels
 from .forms import LabelForm
 
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
-
-from django.shortcuts import redirect
 
 
 class MixinMessage(LoginRequiredMixin):
@@ -63,15 +61,17 @@ class DeleteLabel(MixinMessage, SuccessMessageMixin, DeleteView):
     extra_context = {'title': 'Deleting a label'}
     success_url = reverse_lazy('index_labels')
     success_message = 'Label deleted successfully'
+    error_del_message = "The label cannot be deleted because it is in use."
 
-    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+    def post(self, request: HttpRequest,
+             *args: str, **kwargs: Any) -> HttpResponse:
         label_id = kwargs.get('pk')
         label = Labels.objects.get(id=label_id)
         tasks = label.labels.all()
 
         if tasks:
             messages.add_message(request, messages.ERROR,
-                                 "The label cannot be deleted because it is in use.")
+                                 self.error_del_message)
             return redirect(reverse_lazy('index_labels'))
 
         return super().post(request, *args, **kwargs)

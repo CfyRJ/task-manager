@@ -1,23 +1,22 @@
 from typing import Any
-from django.forms.forms import BaseForm
 from django.http import HttpRequest, HttpResponse
+from django.forms.forms import BaseForm
+from django.shortcuts import render, redirect
 
-from django.shortcuts import render
-from django.views import View
 from django.contrib import messages
-from .models import Tasks
-
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, UpdateView, DeleteView
 from django.contrib.messages.views import SuccessMessageMixin
-from .forms import TaskForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from django.views import View
+from django.views.generic import CreateView, UpdateView, DeleteView
 
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 
-from django.shortcuts import redirect
-
 from django_filters.views import FilterView
+
+from .models import Tasks
+from .forms import TaskForm
 from .filters import TasksFilter
 
 
@@ -61,7 +60,8 @@ class CreateTask(MixinMessage, SuccessMessageMixin, CreateView):
         for label_id in labels_id:
             task.labels.add(label_id)
 
-        messages.add_message(self.request, messages.SUCCESS, self.success_message)
+        messages.add_message(self.request,
+                             messages.SUCCESS, self.success_message)
 
         return redirect(self.success_url)
 

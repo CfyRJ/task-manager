@@ -11,9 +11,9 @@ class UsersTests(TestCase):
     def setUpTestData(cls):
         user_model = get_user_model()
         cls.user1 = user_model.objects.create_user(username='utest1',
-                                            password='ptest')
+                                                   password='ptest')
         cls.user2 = user_model.objects.create_user(username='utest2',
-                                            password='ptest')
+                                                   password='ptest')
 
     def test_show_users(self):
         response = self.client.get('/users/')

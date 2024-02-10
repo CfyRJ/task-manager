@@ -20,7 +20,7 @@ class StatusesTests(TestCase):
 
         cls.status1 = Status.objects.create(name='first status')
         cls.status2 = Status.objects.create(name='second status')
-    
+
     def test_error_access(self):
         id = get_status_id_by_name('first status')
 
@@ -105,7 +105,7 @@ class StatusesTests(TestCase):
         self.assertRedirects(response_redirect, '/statuses/', 302, 200)
 # We check the creation of a second identical status.
         response = self.client.post('/statuses/create/',
-                                     {'name': 'test status'})
+                                    {'name': 'test status'})
         status_code = response.status_code
         self.assertEqual(status_code, 200)
         count_statuses = len(Status.objects.all())
@@ -113,15 +113,18 @@ class StatusesTests(TestCase):
 
         new_status_id = get_status_id_by_name('test status')
 # Checking the status update.
-        response_redirect = self.client.post(f'/statuses/{new_status_id}/update/',
-                                             {'name': 'test status rename'})
+        response_redirect = self.client.post(
+            f'/statuses/{new_status_id}/update/',
+            {'name': 'test status rename'})
         response = self.client.get('/statuses/')
         content = response.content.decode()
         self.assertIn('Status successfully changed', content)
         self.assertIn('test status rename', content)
         self.assertRedirects(response_redirect, '/statuses/', 302, 200)
 # Checking status deletion.
-        response_redirect = self.client.post(f'/statuses/{new_status_id}/delete/')
+        response_redirect = self.client.post(
+            f'/statuses/{new_status_id}/delete/'
+            )
         response = self.client.get('/statuses/')
         content = response.content.decode()
         self.assertIn('Status deleted successfully', content)

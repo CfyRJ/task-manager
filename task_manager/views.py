@@ -3,20 +3,14 @@ from django.views import View
 from django.utils.translation import gettext as _
 from django.contrib import messages
 
-from django.contrib.auth.views import LoginView
-from .forms import LoginUserForm
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.views import LogoutView
 
-from django.http import HttpResponse
+from .forms import LoginUserForm
 
 
 class IndexView(View):
     def get(self, request, *args, **kwargs):
-
-        # messages.add_message(request, messages.INFO, "Hi me!")
-        # messages.add_message(request, messages.ERROR, "Hi me!")
-        # messages.add_message(request, messages.SUCCESS, "Hi me!")
         messages_ = messages.get_messages(request)
 
         return render(

@@ -1,5 +1,5 @@
 from django.db import models
-# from ..tasks.models import Tasks
+
 
 # Create your models here.
 class Labels(models.Model):

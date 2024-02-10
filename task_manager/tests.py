@@ -10,7 +10,8 @@ class InitialTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         user_model = get_user_model()
-        cls.user = user_model.objects.create_user(username='utest', password='ptest')
+        cls.user = user_model.objects.create_user(username='utest',
+                                                  password='ptest')
 
     def test_index(self):
         response = self.client.get('/')

@@ -12,9 +12,9 @@ class LabelsTests(TestCase):
     def setUpTestData(cls):
         user_model = get_user_model()
         cls.user_auth = user_model.objects.create_user(username='user_label',
-                                                  password='pass_label',
-                                                  first_name='user',
-                                                  last_name='author')
+                                                       password='pass_label',
+                                                       first_name='user',
+                                                       last_name='author')
         cls.label_one = Labels.objects.create(name='One label')
 
     def test_error_access(self):
@@ -103,7 +103,7 @@ class LabelsTests(TestCase):
         self.assertRedirects(response_redirect, '/labels/', 302, 200)
 # Checking the uniqueness of the label name.
         response = self.client.post('/labels/create/',
-                                             {'name': 'create new label'})
+                                    {'name': 'create new label'})
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
