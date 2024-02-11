@@ -12,7 +12,8 @@
 
       <p>{% translate 'Are you sure you want to remove' %} {{ object.name }}?</p>
 
-      {% bootstrap_button class="btn btn-danger" button_type="submit" content="Yes, delete" %}
+      {% translate "Yes, delete" as button_text %}
+      {% bootstrap_button class="btn btn-danger" button_type="submit" content=button_text %}
     </form>
   </main>
 {% endblock %}

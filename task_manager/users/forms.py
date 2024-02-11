@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 
 from string import ascii_lowercase, ascii_uppercase, digits
 
+from django.utils.translation import gettext_lazy as _
+
 
 class CreateUserForm(UserCreationForm):
 
@@ -20,6 +22,6 @@ class CreateUserForm(UserCreationForm):
         for symbol in username:
             if symbol not in good_symbols:
                 raise forms.ValidationError(
-                    '''The username must contain only letters,
-                    numbers and the symbols @/./+/-/_.''')
+                    _('''The username must contain only letters,
+                    numbers and the symbols @/./+/-/_.'''))
         return username

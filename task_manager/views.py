@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import View
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 
 from django.contrib.auth.views import LoginView, LogoutView
@@ -25,12 +25,12 @@ class IndexView(View):
 class LoginUser(SuccessMessageMixin, LoginView):
     form_class = LoginUserForm
     template_name = 'login.html'
-    extra_context = {'title': 'Register'}
-    success_message = 'You are logged in'
+    extra_context = {'title': _('LogIn')}
+    success_message = _('You are logged in')
 
 
 class LogoutUser(LogoutView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            messages.info(request, "You are logged out.")
+            messages.info(request, _("You are logged out."))
         return super().dispatch(request, *args, **kwargs)

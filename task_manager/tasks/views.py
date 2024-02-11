@@ -11,7 +11,7 @@ from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 
 from django.urls import reverse_lazy
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from django_filters.views import FilterView
 
@@ -25,7 +25,7 @@ class MixinMessage(LoginRequiredMixin):
 
     def get_login_url(self, *args, **kwargs):
         messages.add_message(self.request, messages.ERROR,
-                             'You are not authorized! Please come in.')
+                             _('You are not authorized! Please come in.'))
         return super().get_login_url()
 
 
@@ -44,9 +44,9 @@ class IndexSTasks(MixinMessage, FilterView):
 class CreateTask(MixinMessage, SuccessMessageMixin, CreateView):
     form_class = TaskForm
     template_name = 'tasks/create_task.html'
-    extra_context = {'title': 'Create task'}
+    extra_context = {'title': _('Create task')}
     success_url = reverse_lazy('index_tasks')
-    success_message = 'Task successfully created'
+    success_message = _('Task successfully created')
 
     def form_valid(self, form: BaseForm):
         labels_id = form.cleaned_data['labels']
@@ -70,17 +70,17 @@ class UpdateTask(MixinMessage, SuccessMessageMixin, UpdateView):
     model = Tasks
     form_class = TaskForm
     template_name = 'tasks/update_task.html'
-    extra_context = {'title': 'Change of task'}
+    extra_context = {'title': _('Change of task')}
     success_url = reverse_lazy('index_tasks')
-    success_message = 'Task successfully changed'
+    success_message = _('Task successfully changed')
 
 
 class DeleteTask(MixinMessage, SuccessMessageMixin, DeleteView):
     model = Tasks
     template_name = 'tasks/delete_task.html'
-    extra_context = {'title': 'Deleting a task'}
+    extra_context = {'title': _('Deleting a task')}
     success_url = reverse_lazy('index_tasks')
-    success_message = 'Task deleted successfully'
+    success_message = _('Task deleted successfully')
 
     def get(self, request: HttpRequest,
             *args: str, **kwargs: Any) -> HttpResponse:
@@ -89,7 +89,7 @@ class DeleteTask(MixinMessage, SuccessMessageMixin, DeleteView):
         author = Tasks.objects.get(id=id_task).author
         if user != author:
             messages.add_message(self.request, messages.ERROR,
-                                 'Only its author can delete a task')
+                                 _('Only its author can delete a task'))
             return redirect(reverse_lazy('index_tasks'))
 
         return super().get(request, *args, **kwargs)

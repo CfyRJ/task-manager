@@ -11,13 +11,13 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.urls import reverse_lazy
 
 from .forms import CreateUserForm
 
 
-MESS_PERMISSION = "You do not have permission to modify another user."
+MESS_PERMISSION = _("You do not have permission to modify another user.")
 
 
 class IndexIndex(View):
@@ -37,17 +37,17 @@ class IndexIndex(View):
 class CreateUser(SuccessMessageMixin, CreateView):
     form_class = CreateUserForm
     template_name = 'users/create_user.html'
-    extra_context = {'title': 'Authorization user'}
+    extra_context = {'title': _('Authorization user')}
     success_url = reverse_lazy('login')
-    success_message = 'You have successfully registered'
+    success_message = _('You have successfully registered')
 
 
 class UpdateUser(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = CreateUserForm
     template_name = 'users/update_user.html'
-    extra_context = {'title': 'Change user'}
+    extra_context = {'title': _('Change user')}
     success_url = reverse_lazy('index_users')
-    success_message = 'User successfully changed'
+    success_message = _('User successfully changed')
 
     def get(self, request: HttpRequest,
             *args: str, **kwargs: Any) -> HttpResponse:
@@ -73,9 +73,9 @@ class UpdateUser(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 class DeleteUser(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     template_name = 'users/delete_user.html'
-    extra_context = {'title': 'Deleting a user'}
+    extra_context = {'title': _('Deleting a user')}
     success_url = reverse_lazy('index_users')
-    success_message = 'User deleted successfully'
+    success_message = _('User deleted successfully')
 
     def get(self, request: HttpRequest,
             *args: str, **kwargs: Any) -> HttpResponse:
@@ -101,6 +101,6 @@ class DeleteUser(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         except ProtectedError:
             messages.add_message(
                 request, messages.ERROR,
-                "The user cannot be deleted because it is in use."
+                _("The user cannot be deleted because it is in use.")
                 )
             return redirect(reverse_lazy('index_users'))

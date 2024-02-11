@@ -12,7 +12,8 @@
 
       {% bootstrap_form form %}
 
-      {% bootstrap_button button_type="submit" content="Change" %}
+      {% translate "Change" as button_text %}
+      {% bootstrap_button button_type="submit" content=button_text %}
     </form>
   </main>
 {% endblock %}
