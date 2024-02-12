@@ -9,11 +9,16 @@ from ..labels.models import Labels
 
 
 class TasksFilter(FilterSet):
-    labels = ChoiceFilter(choices=lambda:
-                          [(label.id, label.name)
-                           for label
-                           in Labels.objects.all()])
-    author = BooleanFilter(widget=forms.CheckboxInput, method='filter_author', label=_('Only your tasks'))
+    label = ChoiceFilter(
+        choices=lambda: [(label.id, label.name)
+                         for label
+                         in Labels.objects.all()],
+        field_name='labels',
+        label=_('Label'),
+        )
+    self_tasks = BooleanFilter(widget=forms.CheckboxInput,
+                               method='filter_author',
+                               label=_('Only your tasks'))
 
     def filter_author(self, queryset, *args, **kwargs):
         author = args[-1]
@@ -24,4 +29,4 @@ class TasksFilter(FilterSet):
 
     class Meta:
         model = Tasks
-        fields = ['status', 'executor', 'labels', 'author']
+        fields = ['status', 'executor', 'label', 'self_tasks']

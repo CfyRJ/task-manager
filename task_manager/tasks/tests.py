@@ -310,7 +310,7 @@ class TasksTests(TestCase):
         self.assertNotIn('Update delete', content)
         self.assertIn('Executor delete', content)
 
-        response = self.client.get(f'/tasks/?labels={label_id_delete}')
+        response = self.client.get(f'/tasks/?label={label_id_delete}')
         content = response.content.decode()
         self.assertNotIn('Test task', content)
         self.assertNotIn('Check', content)
@@ -324,7 +324,7 @@ class TasksTests(TestCase):
         self.assertNotIn('Update delete', content)
         self.assertIn('Executor delete', content)
 
-        response = self.client.get('/tasks/?author=on')
+        response = self.client.get('/tasks/?self_tasks=on')
         content = response.content.decode()
         self.assertNotIn('Test task', content)
         self.assertIn('Check', content)
@@ -335,8 +335,8 @@ class TasksTests(TestCase):
             '/tasks/',
             f'?status={status_check_id}',
             f'&executor={user_delete_id}',
-            f'&labels={label_id_delete}',
-            '&author=on',
+            f'&label={label_id_delete}',
+            '&self_tasks=on',
         )
         response = self.client.get(url)
         content = response.content.decode()

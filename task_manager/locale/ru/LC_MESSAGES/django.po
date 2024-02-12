@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-12 21:24+0300\n"
+"POT-Creation-Date: 2024-02-12 21:39+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -91,7 +91,11 @@ msgstr "Статус успешно удален"
 msgid "The status cannot be deleted because it is in use."
 msgstr "Невозможно удалить статус, потому что он используется"
 
-#: task_manager/tasks/filters.py:16
+#: task_manager/tasks/filters.py:17
+msgid "Label"
+msgstr "Метка"
+
+#: task_manager/tasks/filters.py:21
 msgid "Only your tasks"
 msgstr "Только свои задачи"
 
