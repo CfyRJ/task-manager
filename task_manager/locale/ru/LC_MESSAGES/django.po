@@ -77,7 +77,7 @@ msgstr "Измение статуса"
 
 #: task_manager/statuses/views.py:57
 msgid "Status successfully changed"
-msgstr "Статус успешно изменён"
+msgstr "Статус успешно изменен"
 
 #: task_manager/statuses/views.py:63
 msgid "Deleting a status"
@@ -85,7 +85,7 @@ msgstr "Удаление статуса"
 
 #: task_manager/statuses/views.py:65
 msgid "Status deleted successfully"
-msgstr "Статус успешно удалён"
+msgstr "Статус успешно удален"
 
 #: task_manager/statuses/views.py:66
 msgid "The status cannot be deleted because it is in use."
@@ -290,7 +290,7 @@ msgstr "Регистрация"
 
 #: task_manager/users/views.py:42
 msgid "You have successfully registered"
-msgstr "Вы успешно зарегистрировались"
+msgstr "Пользователь успешно зарегистрирован"
 
 #: task_manager/users/views.py:48
 msgid "Change user"
@@ -298,7 +298,7 @@ msgstr "Изменение пользователя"
 
 #: task_manager/users/views.py:50
 msgid "User successfully changed"
-msgstr "Пользователь успешно изменён"
+msgstr "Пользователь успешно изменен"
 
 #: task_manager/users/views.py:76
 msgid "Deleting a user"
@@ -306,7 +306,7 @@ msgstr "Удаление пользователя"
 
 #: task_manager/users/views.py:78
 msgid "User deleted successfully"
-msgstr "Пользователь успешно удалён"
+msgstr "Пользователь успешно удален"
 
 #: task_manager/users/views.py:104
 msgid "The user cannot be deleted because it is in use."
