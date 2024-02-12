@@ -1,7 +1,10 @@
+from django.utils.translation import gettext_lazy as _
+
 from django_filters import FilterSet
-from .models import Tasks
-from django import forms
 from django_filters import ChoiceFilter, BooleanFilter
+
+from django import forms
+from .models import Tasks
 from ..labels.models import Labels
 
 
@@ -10,7 +13,7 @@ class TasksFilter(FilterSet):
                           [(label.id, label.name)
                            for label
                            in Labels.objects.all()])
-    author = BooleanFilter(widget=forms.CheckboxInput, method='filter_author')
+    author = BooleanFilter(widget=forms.CheckboxInput, method='filter_author', label=_('Only your tasks'))
 
     def filter_author(self, queryset, *args, **kwargs):
         author = args[-1]
