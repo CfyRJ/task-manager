@@ -26,7 +26,7 @@ class MixinMessage(LoginRequiredMixin):
         return super().get_login_url()
 
 
-class IndexStatuses(MixinMessage,  View):
+class IndexStatuses(MixinMessage, View):
 
     def get(self, request, *args, **kwargs):
         statuses = Status.objects.order_by('id')

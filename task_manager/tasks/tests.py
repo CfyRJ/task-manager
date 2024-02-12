@@ -28,23 +28,23 @@ class TasksTests(TestCase):
     def setUpTestData(cls):
         user_model = get_user_model()
         cls.user_author = user_model.objects.create_user(
-                username='author_tasks',
-                password='pass',
-                first_name='Author',
-                last_name='Tasks'
-                )
+            username='author_tasks',
+            password='pass',
+            first_name='Author',
+            last_name='Tasks'
+        )
         cls.user_executor = user_model.objects.create_user(
-                username='executor_tasks',
-                password='pass',
-                first_name='Executor',
-                last_name='Tasks'
-                )
+            username='executor_tasks',
+            password='pass',
+            first_name='Executor',
+            last_name='Tasks'
+        )
         cls.user_delete = user_model.objects.create_user(
-                username='user_for_delete',
-                password='pass',
-                first_name='User for',
-                last_name='Delete'
-                )
+            username='user_for_delete',
+            password='pass',
+            first_name='User for',
+            last_name='Delete'
+        )
 
         cls.status_check = Status.objects.create(name='Status for check')
         cls.status_update = Status.objects.create(name='Status for update')
@@ -53,7 +53,7 @@ class TasksTests(TestCase):
         cls.label_check_1m = Labels.objects.create(name='First label for check')
         cls.label_check_2m = Labels.objects.create(
             name='Second label for check'
-            )
+        )
         cls.label_delete = Labels.objects.create(name='Label for delete')
 
         cls.task_check = Tasks.objects.create(name='Test task',
@@ -98,7 +98,7 @@ class TasksTests(TestCase):
              'description': 'This is somethong',
              'executor': user_executor_id,
              'author': self.user_author}
-             )
+        )
         response = self.client.get('/login/')
         content = response.content.decode()
         self.assertIn('You are not authorized! Please come in.', content)
@@ -176,7 +176,7 @@ class TasksTests(TestCase):
              'description': 'Sleep',
              'executor': user_delete_id,
              'labels': (label_id_1, label_id_delete)}
-             )
+        )
         response = self.client.get('/tasks/')
         content = response.content.decode()
         self.assertIn('New work', content)
@@ -200,7 +200,7 @@ class TasksTests(TestCase):
 # Checks that the label in use cannot be deleted.
         response_redirect = self.client.post(
             f'/labels/{label_id_delete}/delete/'
-            )
+        )
         response = self.client.get('/labels/')
         content = response.content.decode()
         self.assertIn('The label cannot be deleted because it is in use.',
@@ -210,7 +210,7 @@ class TasksTests(TestCase):
 # Checks that the status in use cannot be deleted.
         response_redirect = self.client.post(
             f'/statuses/{status_delete_id}/delete/'
-            )
+        )
         response = self.client.get('/statuses/')
         content = response.content.decode()
         self.assertIn('The status cannot be deleted because it is in use.',
@@ -239,7 +239,7 @@ class TasksTests(TestCase):
 # Check that the label can be removed.
         response_redirect = self.client.post(
             f'/labels/{label_id_delete}/delete/'
-            )
+        )
         response = self.client.get('/labels/')
         content = response.content.decode()
         self.assertIn('Label deleted successfully', content)
@@ -248,7 +248,7 @@ class TasksTests(TestCase):
 # Check that the status can be removed.
         response_redirect = self.client.post(
             f'/statuses/{status_delete_id}/delete/'
-            )
+        )
         response = self.client.get('/statuses/')
         content = response.content.decode()
         self.assertIn('Status deleted successfully', content)

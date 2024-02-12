@@ -132,7 +132,7 @@ class StatusesTests(TestCase):
 # Checking status deletion.
         response_redirect = self.client.post(
             f'/statuses/{new_status_id}/delete/'
-            )
+        )
         response = self.client.get('/statuses/')
         content = response.content.decode()
         self.assertIn('Status deleted successfully', content)

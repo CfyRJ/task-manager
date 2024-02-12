@@ -102,5 +102,5 @@ class DeleteUser(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
             messages.add_message(
                 request, messages.ERROR,
                 _("The user cannot be deleted because it is in use.")
-                )
+            )
             return redirect(reverse_lazy('index_users'))

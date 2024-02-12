@@ -15,7 +15,7 @@ class TasksFilter(FilterSet):
                          in Labels.objects.all()],
         field_name='labels',
         label=_('Label'),
-        )
+    )
     self_tasks = BooleanFilter(widget=forms.CheckboxInput,
                                method='filter_author',
                                label=_('Only your tasks'))

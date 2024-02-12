@@ -16,7 +16,7 @@ class CreateUserForm(UserCreationForm):
 
     def clean_username(self):
         good_symbols = '@.+-_' + ascii_lowercase + \
-                        ascii_uppercase + digits
+                       ascii_uppercase + digits
 
         username = self.cleaned_data['username']
         for symbol in username:
