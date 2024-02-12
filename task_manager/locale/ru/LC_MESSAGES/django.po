@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-11 13:42+0300\n"
+"POT-Creation-Date: 2024-02-12 20:37+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,7 +44,7 @@ msgstr "Метка успешно создана"
 
 #: task_manager/labels/views.py:54
 msgid "Change of label"
-msgstr "Изменить метку"
+msgstr "Измение метки"
 
 #: task_manager/labels/views.py:56
 msgid "Label successfully changed"
@@ -73,7 +73,7 @@ msgstr "Статус успешно создан"
 
 #: task_manager/statuses/views.py:55
 msgid "Change of status"
-msgstr "Изменить статус"
+msgstr "Измение статуса"
 
 #: task_manager/statuses/views.py:57
 msgid "Status successfully changed"
@@ -135,7 +135,7 @@ msgstr "Задача успешно создана"
 
 #: task_manager/tasks/views.py:73
 msgid "Change of task"
-msgstr "Изменить задачу"
+msgstr "Измение задачи"
 
 #: task_manager/tasks/views.py:75
 msgid "Task successfully changed"
@@ -216,6 +216,7 @@ msgstr "Вы уверены, что хотите удалить"
 #: task_manager/templates/labels/delete_label.html:15
 #: task_manager/templates/statuses/delete_status.html:15
 #: task_manager/templates/tasks/delete_task.html:15
+#: task_manager/templates/users/delete_user.html:15
 msgid "Yes, delete"
 msgstr "Да, удалить"
 
@@ -243,14 +244,13 @@ msgstr "Изменить"
 #: task_manager/templates/statuses/index_statuses.html:30
 #: task_manager/templates/tasks/index_tasks.html:51
 #: task_manager/templates/tasks/show_task.html:54
-#: task_manager/templates/users/delete_user.html:15
 #: task_manager/templates/users/index.html:30
 msgid "Delete"
 msgstr "Удалить"
 
-#: task_manager/templates/login.html:14
+#: task_manager/templates/login.html:14 task_manager/views.py:28
 msgid "LogIn"
-msgstr "Вход"
+msgstr "Войти"
 
 #: task_manager/templates/tasks/index_tasks.html:16
 msgid "Show"
@@ -260,9 +260,9 @@ msgstr "Показать"
 msgid "View task"
 msgstr "Просмотр задачи"
 
-#: task_manager/templates/users/create_user.html:15 task_manager/views.py:28
+#: task_manager/templates/users/create_user.html:15
 msgid "Register"
-msgstr "Регистрация"
+msgstr "Зарегистрировать"
 
 #: task_manager/templates/users/index.html:13
 msgid "User name"
