@@ -1,4 +1,5 @@
 from django.test import TestCase, Client
+from django.test.utils import override_settings
 from django.contrib.auth import get_user_model
 from .models import Labels
 
@@ -7,6 +8,13 @@ class LabelsTests(TestCase):
 
     def setUp(self):
         self.client = Client()
+
+        self._override = override_settings(LANGUAGE_CODE='en-us')
+        self._override.enable()
+
+    def tearDown(self):
+        self._override.disable()
+        super().tearDown()
 
     @classmethod
     def setUpTestData(cls):
