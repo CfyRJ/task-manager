@@ -43,3 +43,12 @@ jobs:
         run: |
           make lint
           make test
+
+      - name: Test coverage
+        uses: paambaati/codeclimate-action@v3.1.1
+        if: github.ref_name == 'main'
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: make test-coverage
+          debug: true

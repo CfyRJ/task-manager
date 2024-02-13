@@ -8,13 +8,16 @@ start:
 	gunicorn task_manager.wsgi:application
 
 test:
-	poetry run python manage.py test
+	coverage run --source='.' manage.py test
 
 lint:
 	poetry run flake8 task_manager
 
-# test-coverage:
-# 	poetry run pytest --cov=task_manager --cov-report xml
+test-coverage:
+	coverage xml -o coverage.xml
+
+show-test-coverage:
+	coverage report
 
 build:
 	./build.sh
