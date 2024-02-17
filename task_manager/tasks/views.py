@@ -1,14 +1,14 @@
 from typing import Any
 from django.http import HttpRequest, HttpResponse
 from django.forms.forms import BaseForm
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
+from django.views.generic.detail import DetailView
 
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -81,14 +81,7 @@ class DeleteTask(MixinMessage, SuccessMessageMixin, DeleteView):
         return super().get(request, *args, **kwargs)
 
 
-class ShowTask(View):
-    def get(self, request, *args, **kwargs):
-        id_task = kwargs.get('pk')
-        task = Tasks.objects.get(id=id_task)
-        labels = task.labels.all()
-        return render(request,
-                      'tasks/show_task.html',
-                      context={
-                          'task': task,
-                          'labels': labels,
-                      })
+class ShowTask(DetailView):
+    model = Tasks
+    template_name = 'tasks/show_task.html'
+    context_object_name = 'task'
