@@ -1,10 +1,10 @@
 from typing import Any
 from django.http import HttpRequest, HttpResponse
 from django.db.models.deletion import ProtectedError
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 
-from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
+from django.views.generic.list import ListView
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -26,18 +26,15 @@ class MixinMessage(LoginRequiredMixin):
         return super().get_login_url()
 
 
-class IndexStatuses(MixinMessage, View):
+class IndexStatuses(MixinMessage, ListView):
+    model = Status
+    template_name = 'statuses/index_statuses.html'
+    context_object_name = 'statuses'
 
-    def get(self, request, *args, **kwargs):
-        statuses = Status.objects.order_by('id')
-
-        messages_ = messages.get_messages(request)
-        return render(request,
-                      'statuses/index_statuses.html',
-                      context={
-                          'messages': messages_,
-                          'statuses': statuses,
-                      })
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['messages'] = messages.get_messages(self.request)
+        return context
 
 
 class CreateStatus(MixinMessage, SuccessMessageMixin, CreateView):

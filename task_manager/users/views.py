@@ -1,6 +1,6 @@
 from typing import Any
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.db.models.deletion import ProtectedError
 
 from django.contrib import messages
@@ -8,8 +8,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
-from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
+from django.views.generic.list import ListView
 
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse_lazy
@@ -20,18 +20,15 @@ from .forms import CreateUserForm
 MESS_PERMISSION = _("You do not have permission to modify another user.")
 
 
-class IndexIndex(View):
+class IndexIndex(ListView):
+    model = get_user_model()
+    template_name = 'users/index.html'
+    context_object_name = 'users'
 
-    def get(self, request, *args, **kwargs):
-        users = get_user_model().objects.order_by('id')
-
-        messages_ = messages.get_messages(request)
-        return render(request,
-                      'users/index.html',
-                      context={
-                          'messages': messages_,
-                          'users': users,
-                      })
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['messages'] = messages.get_messages(self.request)
+        return context
 
 
 class CreateUser(SuccessMessageMixin, CreateView):

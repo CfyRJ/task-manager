@@ -1,9 +1,9 @@
 from typing import Any
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 
-from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
+from django.views.generic.list import ListView
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -26,17 +26,15 @@ class MixinMessage(LoginRequiredMixin):
         return super().get_login_url()
 
 
-class IndexLabels(MixinMessage, View):
-    def get(self, request, *args, **kwargs):
-        labels = Labels.objects.order_by('id')
+class IndexLabels(MixinMessage, ListView):
+    model = Labels
+    template_name = 'labels/index_labels.html'
+    context_object_name = 'labels'
 
-        messages_ = messages.get_messages(request)
-        return render(request,
-                      'labels/index_labels.html',
-                      context={
-                          'messages': messages_,
-                          'labels': labels,
-                      })
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['messages'] = messages.get_messages(self.request)
+        return context
 
 
 class CreateLabel(MixinMessage, SuccessMessageMixin, CreateView):
