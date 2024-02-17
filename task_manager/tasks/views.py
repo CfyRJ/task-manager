@@ -20,16 +20,23 @@ from .forms import TaskForm
 from .filters import TasksFilter
 
 
-class MixinMessage(LoginRequiredMixin):
+class NoAuthMixin(LoginRequiredMixin):
     redirect_field_name = ""
 
-    def get_login_url(self, *args, **kwargs):
-        messages.add_message(self.request, messages.ERROR,
-                             _('You are not authorized! Please come in.'))
-        return super().get_login_url()
+    def dispatch(self, request, *args, **kwargs):
+        self.permission_denied_message = _('You are not authorized! Please come in.')
+        self.permission_denied_url = reverse_lazy('login')
+        return super().dispatch(request, *args, **kwargs)
 
 
-class IndexSTasks(MixinMessage, FilterView):
+class NoPermissionMixin:
+
+    def handle_no_permission(self):
+        messages.error(self.request, self.get_permission_denied_message())
+        return redirect(self.permission_denied_url)
+
+
+class IndexSTasks(NoPermissionMixin, NoAuthMixin, FilterView):
     model = Tasks
     template_name = 'tasks/index_tasks.html'
     filterset_class = TasksFilter
@@ -41,7 +48,7 @@ class IndexSTasks(MixinMessage, FilterView):
         return context
 
 
-class CreateTask(MixinMessage, SuccessMessageMixin, CreateView):
+class CreateTask(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, CreateView):
     model = Tasks
     form_class = TaskForm
     template_name = 'tasks/create_task.html'
@@ -54,7 +61,7 @@ class CreateTask(MixinMessage, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class UpdateTask(MixinMessage, SuccessMessageMixin, UpdateView):
+class UpdateTask(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView):
     model = Tasks
     form_class = TaskForm
     template_name = 'tasks/update_task.html'
@@ -62,7 +69,7 @@ class UpdateTask(MixinMessage, SuccessMessageMixin, UpdateView):
     success_message = _('Task successfully changed')
 
 
-class DeleteTask(MixinMessage, SuccessMessageMixin, DeleteView):
+class DeleteTask(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, DeleteView):
     model = Tasks
     template_name = 'tasks/delete_task.html'
     success_url = reverse_lazy('index_tasks')
@@ -81,7 +88,7 @@ class DeleteTask(MixinMessage, SuccessMessageMixin, DeleteView):
         return super().get(request, *args, **kwargs)
 
 
-class ShowTask(DetailView):
+class ShowTask(NoPermissionMixin, NoAuthMixin, DetailView):
     model = Tasks
     template_name = 'tasks/show_task.html'
     context_object_name = 'task'

@@ -20,6 +20,22 @@ from .forms import CreateUserForm
 MESS_PERMISSION = _("You do not have permission to modify another user.")
 
 
+class NoAuthMixin(LoginRequiredMixin):
+    redirect_field_name = ""
+
+    def dispatch(self, request, *args, **kwargs):
+        self.permission_denied_message = _('You are not authorized! Please come in.')
+        self.permission_denied_url = reverse_lazy('login')
+        return super().dispatch(request, *args, **kwargs)
+
+
+class NoPermissionMixin:
+
+    def handle_no_permission(self):
+        messages.error(self.request, self.get_permission_denied_message())
+        return redirect(self.permission_denied_url)
+
+
 class IndexIndex(ListView):
     model = get_user_model()
     template_name = 'users/index.html'
@@ -38,7 +54,7 @@ class CreateUser(SuccessMessageMixin, CreateView):
     success_message = _('You have successfully registered')
 
 
-class UpdateUser(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class UpdateUser(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView):
     form_class = CreateUserForm
     template_name = 'users/update_user.html'
     success_url = reverse_lazy('index_users')
@@ -66,7 +82,7 @@ class UpdateUser(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return super().form_valid(form)
 
 
-class DeleteUser(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class DeleteUser(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, DeleteView):
     template_name = 'users/delete_user.html'
     success_url = reverse_lazy('index_users')
     success_message = _('User deleted successfully')

@@ -17,16 +17,23 @@ from .models import Status
 from .forms import StatusForm
 
 
-class MixinMessage(LoginRequiredMixin):
+class NoAuthMixin(LoginRequiredMixin):
     redirect_field_name = ""
 
-    def get_login_url(self, *args, **kwargs):
-        messages.add_message(self.request, messages.ERROR,
-                             _('You are not authorized! Please come in.'))
-        return super().get_login_url()
+    def dispatch(self, request, *args, **kwargs):
+        self.permission_denied_message = _('You are not authorized! Please come in.')
+        self.permission_denied_url = reverse_lazy('login')
+        return super().dispatch(request, *args, **kwargs)
 
 
-class IndexStatuses(MixinMessage, ListView):
+class NoPermissionMixin:
+
+    def handle_no_permission(self):
+        messages.error(self.request, self.get_permission_denied_message())
+        return redirect(self.permission_denied_url)
+
+
+class IndexStatuses(NoPermissionMixin, NoAuthMixin, ListView):
     model = Status
     template_name = 'statuses/index_statuses.html'
     context_object_name = 'statuses'
@@ -37,14 +44,14 @@ class IndexStatuses(MixinMessage, ListView):
         return context
 
 
-class CreateStatus(MixinMessage, SuccessMessageMixin, CreateView):
+class CreateStatus(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, CreateView):
     form_class = StatusForm
     template_name = 'statuses/create_status.html'
     success_url = reverse_lazy('index_statuses')
     success_message = _('Status successfully created')
 
 
-class UpdateStatus(MixinMessage, SuccessMessageMixin, UpdateView):
+class UpdateStatus(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView):
     model = Status
     form_class = StatusForm
     template_name = 'statuses/update_status.html'
@@ -52,7 +59,7 @@ class UpdateStatus(MixinMessage, SuccessMessageMixin, UpdateView):
     success_message = _('Status successfully changed')
 
 
-class DeleteStatus(MixinMessage, SuccessMessageMixin, DeleteView):
+class DeleteStatus(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, DeleteView):
     model = Status
     template_name = 'statuses/delete_status.html'
     success_url = reverse_lazy('index_statuses')

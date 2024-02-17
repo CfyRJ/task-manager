@@ -16,17 +16,23 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 
-class MixinMessage(LoginRequiredMixin):
+class NoAuthMixin(LoginRequiredMixin):
     redirect_field_name = ""
 
-    def get_login_url(self, *args, **kwargs):
-        text_messages = _('You are not authorized! Please come in.')
-        messages.add_message(self.request, messages.ERROR,
-                             text_messages)
-        return super().get_login_url()
+    def dispatch(self, request, *args, **kwargs):
+        self.permission_denied_message = _('You are not authorized! Please come in.')
+        self.permission_denied_url = reverse_lazy('login')
+        return super().dispatch(request, *args, **kwargs)
 
 
-class IndexLabels(MixinMessage, ListView):
+class NoPermissionMixin:
+
+    def handle_no_permission(self):
+        messages.error(self.request, self.get_permission_denied_message())
+        return redirect(self.permission_denied_url)
+
+
+class IndexLabels(NoPermissionMixin, NoAuthMixin, ListView):
     model = Labels
     template_name = 'labels/index_labels.html'
     context_object_name = 'labels'
@@ -37,14 +43,14 @@ class IndexLabels(MixinMessage, ListView):
         return context
 
 
-class CreateLabel(MixinMessage, SuccessMessageMixin, CreateView):
+class CreateLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, CreateView):
     form_class = LabelForm
     template_name = 'labels/create_label.html'
     success_url = reverse_lazy('index_labels')
     success_message = _('Label successfully created')
 
 
-class UpdateLabel(MixinMessage, SuccessMessageMixin, UpdateView):
+class UpdateLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView):
     model = Labels
     form_class = LabelForm
     template_name = 'labels/update_label.html'
@@ -52,7 +58,7 @@ class UpdateLabel(MixinMessage, SuccessMessageMixin, UpdateView):
     success_message = _('Label successfully changed')
 
 
-class DeleteLabel(MixinMessage, SuccessMessageMixin, DeleteView):
+class DeleteLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, DeleteView):
     model = Labels
     template_name = 'labels/delete_label.html'
     success_url = reverse_lazy('index_labels')
