@@ -42,6 +42,7 @@ class IndexSTasks(MixinMessage, FilterView):
 
 
 class CreateTask(MixinMessage, SuccessMessageMixin, CreateView):
+    model = Tasks
     form_class = TaskForm
     template_name = 'tasks/create_task.html'
     extra_context = {'title': _('Create task')}
@@ -49,21 +50,9 @@ class CreateTask(MixinMessage, SuccessMessageMixin, CreateView):
     success_message = _('Task successfully created')
 
     def form_valid(self, form: BaseForm):
-        labels_id = form.cleaned_data['labels']
-        task_name = form.cleaned_data['name']
+        form.instance.author = self.request.user
 
-        instance = form.save(commit=False)
-        instance.author = self.request.user
-        instance.save()
-
-        task = Tasks.objects.get(name=task_name)
-        for label_id in labels_id:
-            task.labels.add(label_id)
-
-        messages.add_message(self.request,
-                             messages.SUCCESS, self.success_message)
-
-        return redirect(self.success_url)
+        return super().form_valid(form)
 
 
 class UpdateTask(MixinMessage, SuccessMessageMixin, UpdateView):
