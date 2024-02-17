@@ -43,7 +43,6 @@ class IndexStatuses(MixinMessage, View):
 class CreateStatus(MixinMessage, SuccessMessageMixin, CreateView):
     form_class = StatusForm
     template_name = 'statuses/create_status.html'
-    extra_context = {'title': _('Create status')}
     success_url = reverse_lazy('index_statuses')
     success_message = _('Status successfully created')
 
@@ -52,7 +51,6 @@ class UpdateStatus(MixinMessage, SuccessMessageMixin, UpdateView):
     model = Status
     form_class = StatusForm
     template_name = 'statuses/update_status.html'
-    extra_context = {'title': _('Change of status')}
     success_url = reverse_lazy('index_statuses')
     success_message = _('Status successfully changed')
 
@@ -60,7 +58,6 @@ class UpdateStatus(MixinMessage, SuccessMessageMixin, UpdateView):
 class DeleteStatus(MixinMessage, SuccessMessageMixin, DeleteView):
     model = Status
     template_name = 'statuses/delete_status.html'
-    extra_context = {'title': _('Deleting a status')}
     success_url = reverse_lazy('index_statuses')
     success_message = _('Status deleted successfully')
     error_del_message = _("The status cannot be deleted because it is in use.")

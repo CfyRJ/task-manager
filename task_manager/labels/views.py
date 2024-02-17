@@ -42,7 +42,6 @@ class IndexLabels(MixinMessage, View):
 class CreateLabel(MixinMessage, SuccessMessageMixin, CreateView):
     form_class = LabelForm
     template_name = 'labels/create_label.html'
-    extra_context = {'title': _('Create label')}
     success_url = reverse_lazy('index_labels')
     success_message = _('Label successfully created')
 
@@ -51,7 +50,6 @@ class UpdateLabel(MixinMessage, SuccessMessageMixin, UpdateView):
     model = Labels
     form_class = LabelForm
     template_name = 'labels/update_label.html'
-    extra_context = {'title': _('Change of label')}
     success_url = reverse_lazy('index_labels')
     success_message = _('Label successfully changed')
 
@@ -59,7 +57,6 @@ class UpdateLabel(MixinMessage, SuccessMessageMixin, UpdateView):
 class DeleteLabel(MixinMessage, SuccessMessageMixin, DeleteView):
     model = Labels
     template_name = 'labels/delete_label.html'
-    extra_context = {'title': _('Deleting a label')}
     success_url = reverse_lazy('index_labels')
     success_message = _('Label deleted successfully')
     error_del_message = _("The label cannot be deleted because it is in use.")

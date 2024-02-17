@@ -25,7 +25,6 @@ class IndexView(View):
 class LoginUser(SuccessMessageMixin, LoginView):
     form_class = LoginUserForm
     template_name = 'login.html'
-    extra_context = {'title': _('LogIn')}
     success_message = _('You are logged in')
 
 

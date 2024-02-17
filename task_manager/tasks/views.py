@@ -45,7 +45,6 @@ class CreateTask(MixinMessage, SuccessMessageMixin, CreateView):
     model = Tasks
     form_class = TaskForm
     template_name = 'tasks/create_task.html'
-    extra_context = {'title': _('Create task')}
     success_url = reverse_lazy('index_tasks')
     success_message = _('Task successfully created')
 
@@ -59,7 +58,6 @@ class UpdateTask(MixinMessage, SuccessMessageMixin, UpdateView):
     model = Tasks
     form_class = TaskForm
     template_name = 'tasks/update_task.html'
-    extra_context = {'title': _('Change of task')}
     success_url = reverse_lazy('index_tasks')
     success_message = _('Task successfully changed')
 
@@ -67,7 +65,6 @@ class UpdateTask(MixinMessage, SuccessMessageMixin, UpdateView):
 class DeleteTask(MixinMessage, SuccessMessageMixin, DeleteView):
     model = Tasks
     template_name = 'tasks/delete_task.html'
-    extra_context = {'title': _('Deleting a task')}
     success_url = reverse_lazy('index_tasks')
     success_message = _('Task deleted successfully')
 

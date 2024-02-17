@@ -37,7 +37,6 @@ class IndexIndex(View):
 class CreateUser(SuccessMessageMixin, CreateView):
     form_class = CreateUserForm
     template_name = 'users/create_user.html'
-    extra_context = {'title': _('Authorization user')}
     success_url = reverse_lazy('login')
     success_message = _('You have successfully registered')
 
@@ -45,7 +44,6 @@ class CreateUser(SuccessMessageMixin, CreateView):
 class UpdateUser(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = CreateUserForm
     template_name = 'users/update_user.html'
-    extra_context = {'title': _('Change user')}
     success_url = reverse_lazy('index_users')
     success_message = _('User successfully changed')
 
@@ -73,7 +71,6 @@ class UpdateUser(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 class DeleteUser(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     template_name = 'users/delete_user.html'
-    extra_context = {'title': _('Deleting a user')}
     success_url = reverse_lazy('index_users')
     success_message = _('User deleted successfully')
 

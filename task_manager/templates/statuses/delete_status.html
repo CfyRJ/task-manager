@@ -6,7 +6,7 @@
 
 {% block main %}
   <main>
-    <h1 class="my-4"> {{ title }} </h1>
+    <h1 class="my-4"> {% translate "Deleting a status" %} </h1>
     <form method="post">
       {% csrf_token %}
 
