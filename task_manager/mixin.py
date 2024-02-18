@@ -10,8 +10,7 @@ class NoAuthMixin(LoginRequiredMixin):
 
     def dispatch(self, request, *args, **kwargs):
         self.permission_denied_message = _(
-            'You are not authorized! Please come in.'
-            )
+            'You are not authorized! Please come in.')
         self.permission_denied_url = reverse_lazy('login')
         return super().dispatch(request, *args, **kwargs)
 
@@ -23,6 +22,5 @@ class NoPermissionMixin:
             return redirect(self.index_url)
         else:
             messages.error(self.request, _(
-                'You are not authorized! Please come in.'
-                ))
+                'You are not authorized! Please come in.'))
         return redirect(self.permission_denied_url)
