@@ -16,21 +16,7 @@ from django.utils.translation import gettext_lazy as _
 from .models import Status
 from .forms import StatusForm
 
-
-class NoAuthMixin(LoginRequiredMixin):
-    redirect_field_name = ""
-
-    def dispatch(self, request, *args, **kwargs):
-        self.permission_denied_message = _('You are not authorized! Please come in.')
-        self.permission_denied_url = reverse_lazy('login')
-        return super().dispatch(request, *args, **kwargs)
-
-
-class NoPermissionMixin:
-
-    def handle_no_permission(self):
-        messages.error(self.request, self.get_permission_denied_message())
-        return redirect(self.permission_denied_url)
+from task_manager.mixin import NoAuthMixin, NoPermissionMixin
 
 
 class IndexStatuses(NoPermissionMixin, NoAuthMixin, ListView):

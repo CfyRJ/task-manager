@@ -15,27 +15,12 @@ from .forms import LabelForm
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-
-class NoAuthMixin(LoginRequiredMixin):
-    redirect_field_name = ""
-
-    def dispatch(self, request, *args, **kwargs):
-        self.permission_denied_url = reverse_lazy('login')
-        return super().dispatch(request, *args, **kwargs)
-
-
-class NoPermissionMixin:
-    def handle_no_permission(self):
-        if self.request.user.is_authenticated:
-            messages.error(self.request, _("The label cannot be deleted because it is in use."))
-            return redirect(self.index_url)
-        else:
-            messages.error(self.request, _('You are not authorized! Please come in.'))
-        return redirect(self.permission_denied_url)
+from task_manager.mixin import NoAuthMixin, NoPermissionMixin
     
 
 class UseInTask(UserPassesTestMixin):
     index_url = reverse_lazy('index_labels')
+    error_message = _("The label cannot be deleted because it is in use.")
 
     def test_func(self) -> bool | None:
 

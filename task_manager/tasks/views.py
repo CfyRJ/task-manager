@@ -20,27 +20,12 @@ from .models import Tasks
 from .forms import TaskForm
 from .filters import TasksFilter
 
-
-class NoAuthMixin(LoginRequiredMixin):
-    redirect_field_name = ""
-
-    def dispatch(self, request, *args, **kwargs):
-        self.permission_denied_url = reverse_lazy('login')
-        return super().dispatch(request, *args, **kwargs)
-
-
-class NoPermissionMixin:
-    def handle_no_permission(self):
-        if self.request.user.is_authenticated:
-            messages.error(self.request, _('Only its author can delete a task'))
-            return redirect(self.login_url)
-        else:
-            messages.error(self.request, _('You are not authorized! Please come in.'))
-        return redirect(self.permission_denied_url)
+from task_manager.mixin import NoAuthMixin, NoPermissionMixin
 
 
 class IsAuthorTask(UserPassesTestMixin):
-    login_url = reverse_lazy('index_tasks')
+    index_url = reverse_lazy('index_tasks')
+    error_message = _('Only its author can delete a task')
 
     def test_func(self) -> bool | None:
         task = self.get_object()
