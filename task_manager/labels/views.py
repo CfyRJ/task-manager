@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
-from .models import Labels
+from .models import Label
 from .forms import LabelForm
 
 from django.urls import reverse_lazy
@@ -33,7 +33,7 @@ class UseInTask(UserPassesTestMixin):
 
 
 class IndexLabels(NoPermissionMixin, NoAuthMixin, ListView):
-    model = Labels
+    model = Label
     template_name = 'labels/index_labels.html'
     context_object_name = 'labels'
 
@@ -51,7 +51,7 @@ class CreateLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, CreateVie
 
 
 class UpdateLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView):
-    model = Labels
+    model = Label
     form_class = LabelForm
     template_name = 'labels/update_label.html'
     success_url = reverse_lazy('index_labels')
@@ -59,7 +59,7 @@ class UpdateLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateVie
 
 
 class DeleteLabel(NoPermissionMixin, NoAuthMixin, UseInTask, SuccessMessageMixin, DeleteView):
-    model = Labels
+    model = Label
     template_name = 'labels/delete_label.html'
     success_url = reverse_lazy('index_labels')
     success_message = _('Label deleted successfully')

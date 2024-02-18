@@ -16,7 +16,7 @@ from django.utils.translation import gettext_lazy as _
 
 from django_filters.views import FilterView
 
-from .models import Tasks
+from .models import Task
 from .forms import TaskForm
 from .filters import TasksFilter
 
@@ -33,7 +33,7 @@ class IsAuthorTask(UserPassesTestMixin):
 
 
 class IndexSTasks(NoPermissionMixin, NoAuthMixin, FilterView):
-    model = Tasks
+    model = Task
     template_name = 'tasks/index_tasks.html'
     filterset_class = TasksFilter
 
@@ -45,7 +45,7 @@ class IndexSTasks(NoPermissionMixin, NoAuthMixin, FilterView):
 
 
 class CreateTask(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, CreateView):
-    model = Tasks
+    model = Task
     form_class = TaskForm
     template_name = 'tasks/create_task.html'
     success_url = reverse_lazy('index_tasks')
@@ -58,7 +58,7 @@ class CreateTask(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, CreateView
 
 
 class UpdateTask(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView):
-    model = Tasks
+    model = Task
     form_class = TaskForm
     template_name = 'tasks/update_task.html'
     success_url = reverse_lazy('index_tasks')
@@ -66,13 +66,13 @@ class UpdateTask(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView
 
 
 class DeleteTask(NoPermissionMixin, NoAuthMixin, IsAuthorTask, SuccessMessageMixin, DeleteView):
-    model = Tasks
+    model = Task
     template_name = 'tasks/delete_task.html'
     success_url = reverse_lazy('index_tasks')
     success_message = _('Task deleted successfully')
 
 
 class ShowTask(NoPermissionMixin, NoAuthMixin, DetailView):
-    model = Tasks
+    model = Task
     template_name = 'tasks/show_task.html'
     context_object_name = 'task'

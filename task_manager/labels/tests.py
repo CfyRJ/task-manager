@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.test.utils import override_settings
 from django.contrib.auth import get_user_model
-from .models import Labels
+from .models import Label
 
 
 class LabelsTests(TestCase):
@@ -23,7 +23,7 @@ class LabelsTests(TestCase):
                                                        password='pass_label',
                                                        first_name='user',
                                                        last_name='author')
-        cls.label_one = Labels.objects.create(name='One label')
+        cls.label_one = Label.objects.create(name='One label')
 
     def test_error_access(self):
         id = self.label_one.id
@@ -115,7 +115,7 @@ class LabelsTests(TestCase):
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
-        new_label_id = Labels.objects.get(name='create new label').id
+        new_label_id = Label.objects.get(name='create new label').id
 # Checking for label changes.
         response_redirect = self.client.post(f'/labels/{new_label_id}/update/',
                                              {'name': 'change new label'})

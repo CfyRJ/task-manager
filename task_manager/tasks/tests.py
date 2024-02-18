@@ -2,13 +2,13 @@ from django.test import TestCase, Client
 from django.test.utils import override_settings
 from django.contrib.auth import get_user_model
 from ..statuses.models import Status
-from ..labels.models import Labels
-from .models import Tasks
+from ..labels.models import Label
+from .models import Task
 
 
 class TasksTests(TestCase):
     @staticmethod
-    def get_model_id_by_name(model: ('Users', Status, Labels, Tasks), # noqa
+    def get_model_id_by_name(model: ('Users', Status, Label, Task), # noqa
                              name: str) -> int:
         if model == 'Users':
             return get_user_model().objects.get(username=name).id
@@ -50,13 +50,13 @@ class TasksTests(TestCase):
         cls.status_update = Status.objects.create(name='Status for update')
         cls.status_delete = Status.objects.create(name='Status for delete')
 
-        cls.label_check_1m = Labels.objects.create(name='First label for check')
-        cls.label_check_2m = Labels.objects.create(
+        cls.label_check_1m = Label.objects.create(name='First label for check')
+        cls.label_check_2m = Label.objects.create(
             name='Second label for check'
         )
-        cls.label_delete = Labels.objects.create(name='Label for delete')
+        cls.label_delete = Label.objects.create(name='Label for delete')
 
-        cls.task_check = Tasks.objects.create(name='Test task',
+        cls.task_check = Task.objects.create(name='Test task',
                                               status=cls.status_check,
                                               description='Test description',
                                               executor=cls.user_executor,
@@ -104,7 +104,7 @@ class TasksTests(TestCase):
         self.assertIn('You are not authorized! Please come in.', content)
         self.assertRedirects(response_redirect, '/login/', 302, 200)
 
-        task_id = self.get_model_id_by_name(Tasks, 'Test task')
+        task_id = self.get_model_id_by_name(Task, 'Test task')
 
         response_redirect = self.client.post(f'/tasks/{task_id}/update/',
                                              {'name': 'task1',
@@ -125,7 +125,7 @@ class TasksTests(TestCase):
 
     def test_successfull_access(self):
         self.client.login(username="author_tasks", password="pass")
-        task_id = self.get_model_id_by_name(Tasks, 'Test task')
+        task_id = self.get_model_id_by_name(Task, 'Test task')
 
         response = self.client.get('/tasks/')
         status_code = response.status_code
@@ -166,8 +166,8 @@ class TasksTests(TestCase):
                                                      'Status for update')
         status_delete_id = self.get_model_id_by_name(Status,
                                                      'Status for delete')
-        label_id_1 = self.get_model_id_by_name(Labels, 'First label for check')
-        label_id_delete = self.get_model_id_by_name(Labels, 'Label for delete')
+        label_id_1 = self.get_model_id_by_name(Label, 'First label for check')
+        label_id_delete = self.get_model_id_by_name(Label, 'Label for delete')
 # Checking the creation of the task.
         response_redirect = self.client.post(
             '/tasks/create/',
@@ -191,7 +191,7 @@ class TasksTests(TestCase):
         status_code = response.status_code
         self.assertEqual(status_code, 200)
 
-        new_task_id = self.get_model_id_by_name(Tasks, 'New work')
+        new_task_id = self.get_model_id_by_name(Task, 'New work')
 # Checking the presence of labels in the task.
         response = self.client.get(f'/tasks/{new_task_id}/')
         content = response.content.decode()
@@ -279,8 +279,8 @@ class TasksTests(TestCase):
         status_update_id = self.get_model_id_by_name(Status,
                                                      'Status for update')
 
-        label_id_1 = self.get_model_id_by_name(Labels, 'First label for check')
-        label_id_delete = self.get_model_id_by_name(Labels, 'Label for delete')
+        label_id_1 = self.get_model_id_by_name(Label, 'First label for check')
+        label_id_delete = self.get_model_id_by_name(Label, 'Label for delete')
 
         self.client.post('/tasks/create/',
                          {'name': 'Check',

@@ -1,8 +1,8 @@
 from django.forms import ModelForm
-from .models import Labels
+from .models import Label
 
 
 class LabelForm(ModelForm):
     class Meta:
-        model = Labels
+        model = Label
         fields = ('name', )

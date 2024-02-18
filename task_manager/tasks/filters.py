@@ -4,15 +4,15 @@ from django_filters import FilterSet
 from django_filters import ChoiceFilter, BooleanFilter
 
 from django import forms
-from .models import Tasks
-from ..labels.models import Labels
+from .models import Task
+from ..labels.models import Label
 
 
 class TasksFilter(FilterSet):
     label = ChoiceFilter(
         choices=lambda: [(label.id, label.name)
                          for label
-                         in Labels.objects.all()],
+                         in Label.objects.all()],
         field_name='labels',
         label=_('Label'),
     )
@@ -28,5 +28,5 @@ class TasksFilter(FilterSet):
         return queryset
 
     class Meta:
-        model = Tasks
+        model = Task
         fields = ['status', 'executor', 'label', 'self_tasks']
