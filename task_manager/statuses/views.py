@@ -7,7 +7,6 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
 from django.urls import reverse_lazy
@@ -30,14 +29,16 @@ class IndexStatuses(NoPermissionMixin, NoAuthMixin, ListView):
         return context
 
 
-class CreateStatus(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, CreateView):
+class CreateStatus(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin,
+                   CreateView):
     form_class = StatusForm
     template_name = 'statuses/create_status.html'
     success_url = reverse_lazy('index_statuses')
     success_message = _('Status successfully created')
 
 
-class UpdateStatus(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView):
+class UpdateStatus(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin,
+                   UpdateView):
     model = Status
     form_class = StatusForm
     template_name = 'statuses/update_status.html'
@@ -45,7 +46,8 @@ class UpdateStatus(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateVi
     success_message = _('Status successfully changed')
 
 
-class DeleteStatus(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, DeleteView):
+class DeleteStatus(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin,
+                   DeleteView):
     model = Status
     template_name = 'statuses/delete_status.html'
     success_url = reverse_lazy('index_statuses')

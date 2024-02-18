@@ -1,12 +1,10 @@
 from typing import Any
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect
 
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
 from .models import Label
@@ -16,7 +14,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from task_manager.mixin import NoAuthMixin, NoPermissionMixin
-    
+
 
 class UseInTask(UserPassesTestMixin):
     index_url = reverse_lazy('index_labels')
@@ -43,14 +41,16 @@ class IndexLabels(NoPermissionMixin, NoAuthMixin, ListView):
         return context
 
 
-class CreateLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, CreateView):
+class CreateLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin,
+                  CreateView):
     form_class = LabelForm
     template_name = 'labels/create_label.html'
     success_url = reverse_lazy('index_labels')
     success_message = _('Label successfully created')
 
 
-class UpdateLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView):
+class UpdateLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin,
+                  UpdateView):
     model = Label
     form_class = LabelForm
     template_name = 'labels/update_label.html'
@@ -58,7 +58,8 @@ class UpdateLabel(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateVie
     success_message = _('Label successfully changed')
 
 
-class DeleteLabel(NoPermissionMixin, NoAuthMixin, UseInTask, SuccessMessageMixin, DeleteView):
+class DeleteLabel(NoPermissionMixin, NoAuthMixin, UseInTask,
+                  SuccessMessageMixin, DeleteView):
     model = Label
     template_name = 'labels/delete_label.html'
     success_url = reverse_lazy('index_labels')

@@ -5,7 +5,6 @@ from django.db.models.deletion import ProtectedError
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -40,7 +39,8 @@ class CreateUser(SuccessMessageMixin, CreateView):
     success_message = _('You have successfully registered')
 
 
-class UpdateUser(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView):
+class UpdateUser(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin,
+                 UpdateView):
     form_class = CreateUserForm
     template_name = 'users/update_user.html'
     success_url = reverse_lazy('index_users')
@@ -68,7 +68,8 @@ class UpdateUser(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView
         return super().form_valid(form)
 
 
-class DeleteUser(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, DeleteView):
+class DeleteUser(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin,
+                 DeleteView):
     template_name = 'users/delete_user.html'
     success_url = reverse_lazy('index_users')
     success_message = _('User deleted successfully')

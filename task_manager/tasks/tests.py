@@ -57,10 +57,10 @@ class TasksTests(TestCase):
         cls.label_delete = Label.objects.create(name='Label for delete')
 
         cls.task_check = Task.objects.create(name='Test task',
-                                              status=cls.status_check,
-                                              description='Test description',
-                                              executor=cls.user_executor,
-                                              author=cls.user_author)
+                                             status=cls.status_check,
+                                             description='Test description',
+                                             executor=cls.user_executor,
+                                             author=cls.user_author)
         cls.task_check.labels.add(cls.label_check_1m, cls.label_check_2m)
 
     def test_error_access(self):
