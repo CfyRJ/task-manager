@@ -5,10 +5,11 @@ from django.shortcuts import redirect
 
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -24,16 +25,26 @@ class NoAuthMixin(LoginRequiredMixin):
     redirect_field_name = ""
 
     def dispatch(self, request, *args, **kwargs):
-        self.permission_denied_message = _('You are not authorized! Please come in.')
         self.permission_denied_url = reverse_lazy('login')
         return super().dispatch(request, *args, **kwargs)
 
 
 class NoPermissionMixin:
-
     def handle_no_permission(self):
-        messages.error(self.request, self.get_permission_denied_message())
+        if self.request.user.is_authenticated:
+            messages.error(self.request, _('Only its author can delete a task'))
+            return redirect(self.login_url)
+        else:
+            messages.error(self.request, _('You are not authorized! Please come in.'))
         return redirect(self.permission_denied_url)
+
+
+class IsAuthorTask(UserPassesTestMixin):
+    login_url = reverse_lazy('index_tasks')
+
+    def test_func(self) -> bool | None:
+        task = self.get_object()
+        return self.request.user == task.author
 
 
 class IndexSTasks(NoPermissionMixin, NoAuthMixin, FilterView):
@@ -69,23 +80,11 @@ class UpdateTask(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, UpdateView
     success_message = _('Task successfully changed')
 
 
-class DeleteTask(NoPermissionMixin, NoAuthMixin, SuccessMessageMixin, DeleteView):
+class DeleteTask(NoPermissionMixin, NoAuthMixin, IsAuthorTask, SuccessMessageMixin, DeleteView):
     model = Tasks
     template_name = 'tasks/delete_task.html'
     success_url = reverse_lazy('index_tasks')
     success_message = _('Task deleted successfully')
-
-    def get(self, request: HttpRequest,
-            *args: str, **kwargs: Any) -> HttpResponse:
-        user = request.user
-        id_task = kwargs.get('pk')
-        author = Tasks.objects.get(id=id_task).author
-        if user != author:
-            messages.add_message(self.request, messages.ERROR,
-                                 _('Only its author can delete a task'))
-            return redirect(reverse_lazy('index_tasks'))
-
-        return super().get(request, *args, **kwargs)
 
 
 class ShowTask(NoPermissionMixin, NoAuthMixin, DetailView):
